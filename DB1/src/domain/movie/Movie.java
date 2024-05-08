@@ -6,7 +6,7 @@ public class Movie {
 	private Long movieId;
 	private String title;
 	private String duration;
-	private String rating;
+	private RatingType rating;
 	private String director;
 	private String actor;
 	private String genre;
@@ -14,7 +14,7 @@ public class Movie {
 	private Date releaseDate;
 	private double score;
 
-	public Movie(String title, String duration, String rating, String director, String actor, String genre,
+	public Movie(String title, String duration, RatingType rating, String director, String actor, String genre,
 			String description, Date releaseDate, double score) {
 		this.title = title;
 		this.duration = duration;
@@ -47,11 +47,11 @@ public class Movie {
 		this.duration = duration;
 	}
 
-	public String getRating() {
+	public RatingType getRating() {
 		return this.rating;
 	}
 
-	public void updateRating(String rating) {
+	public void updateRating(RatingType rating) {
 		this.rating = rating;
 	}
 
