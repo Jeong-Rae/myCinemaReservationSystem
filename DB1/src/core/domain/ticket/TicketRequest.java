@@ -1,10 +1,10 @@
 package core.domain.ticket;
 
+import feature.seat.SeatRequest;
+
 public record TicketRequest(
 		int standardPrice,
 		int salePrice,
-		Long screeningScheduleId,
-		Long screenId,
-		Long seatId
+		SeatRequest seatRequest
 ) {
 }

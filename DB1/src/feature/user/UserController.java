@@ -3,14 +3,19 @@ package feature.user;
 import java.util.List;
 
 import core.domain.movie.Movie;
+import core.domain.reservation.Reservation;
 import core.domain.screeningschedule.ScreeningSchedule;
 import core.domain.seat.Seat;
+import core.domain.ticket.Ticket;
+import core.domain.ticket.TicketRequest;
 import feature.member.MemberService;
 import feature.movie.MovieService;
 import feature.movie.SearchCriteria;
+import feature.reservation.ReservationRequest;
 import feature.reservation.ReservationService;
 import feature.screen.ScreenService;
 import feature.screeningschedule.ScreeningScheduleService;
+import feature.seat.SeatRequest;
 import feature.seat.SeatService;
 import feature.ticket.TicketService;
 
@@ -40,6 +45,22 @@ public class UserController {
 	}
 
     // INSERT
+    
+    public void createReservation(ReservationRequest request) {
+    	List<TicketRequest> ticketRequests = request.ticketRequests();
+    	Reservation reservation = reservationService.createReservation(request);
+    	
+    	for (TicketRequest ticketRequest : ticketRequests) {
+    		// 좌석 저장
+    		SeatRequest seatRequest = ticketRequest.seatRequest();
+    		Seat seat = seatService.createSeat(seatRequest);
+    		System.out.println("[createReservation] seat: " + seat);
+    		
+    		//티켓 저장
+    		Ticket ticket = ticketService.createTicket(ticketRequest, seat, reservation);
+    		System.out.println("[createReservation] ticket: " + ticket);
+    	}
+    }
 
     // DELETE
 

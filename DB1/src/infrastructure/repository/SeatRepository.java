@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +50,35 @@ public class SeatRepository {
         }
 
         return response;
+    }
+    
+    // 좌석 에약
+    public Long insertToSeat(Connection connection, Seat seat) {
+    	String sql = "INSERT INTO seat (is_active, `row_number`, col_number, screen_id, screening_schedule_id) VALUES (?, ?, ?, ?, ?)";
+    	long seatId = 0L;
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
+        	 pstmt.setBoolean(1, seat.getIsActive());
+             pstmt.setInt(2, seat.getRowNumber());
+             pstmt.setInt(3, seat.getColNumber());
+             pstmt.setLong(4, seat.getScreenId());
+             pstmt.setLong(5, seat.getScreeningScheduleId());
+            
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        seatId = generatedKeys.getLong(1);
+                    }
+                }
+            }
+            
+        } catch (SQLException e) {
+            System.out.println("[insertToSeat] Reservation 테이블에 INSERT 실패");
+            e.printStackTrace();
+        }
+        
+        return seatId;
     }
 
     public SeatRepository() {

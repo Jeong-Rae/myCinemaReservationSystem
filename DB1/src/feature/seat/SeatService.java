@@ -24,6 +24,7 @@ public class SeatService {
         return response;
     }
     
+    // 예약 불가 좌석 조회
     public List<Seat> findUnavailableSeats(Long screeningScheduleId) {
         List<Seat> response = new ArrayList<>();
         
@@ -34,6 +35,27 @@ public class SeatService {
         }
 
         return response;
+    }
+    
+    //좌석예약
+    public Seat createSeat(SeatRequest request) {
+    	Seat seat = new Seat(true, request.rowNumber(), request.colNumber());
+    	seat.setScreenId(request.screenId());
+    	seat.setScreeningScheduleId(request.screeningScheduleId());
+    	Long seatId;
+    	
+    	try (Connection connection = DatabaseConfig.getConnectionUser()) {
+            seatId = seatRepository.insertToSeat(connection, seat);
+            seat.setSeatId(seatId);
+           
+            System.out.println("[createSeat] seat: " + seat);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    	
+    	
+    	return seat;
+    	
     }
 
     public SeatService(SeatRepository seatRepository) {

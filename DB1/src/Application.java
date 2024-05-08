@@ -1,15 +1,19 @@
 import java.util.List;
 
 import core.domain.movie.Movie;
+import core.domain.reservation.PaymentMethodType;
 import core.domain.screeningschedule.ScreeningSchedule;
 import core.domain.seat.Seat;
+import core.domain.ticket.TicketRequest;
 import feature.admin.AdminController;
 import feature.member.MemberService;
 import feature.movie.MovieService;
 import feature.movie.SearchCriteria;
+import feature.reservation.ReservationRequest;
 import feature.reservation.ReservationService;
 import feature.screen.ScreenService;
 import feature.screeningschedule.ScreeningScheduleService;
+import feature.seat.SeatRequest;
 import feature.seat.SeatService;
 import feature.ticket.TicketService;
 import feature.user.UserController;
@@ -79,11 +83,6 @@ public class Application {
         for (ScreeningSchedule screeningSchedule : screeningSchedules) {
             System.out.println(screeningSchedule);
         }
-//
-//        System.out.println("\nTickets:");
-//        for (Ticket ticket : tickets) {
-//            System.out.println(ticket);
-//        }
 
        
         List<Seat> seats = userController.getUnavailableSeats(1L);
@@ -91,16 +90,11 @@ public class Application {
         for (Seat seat : seats) {
             System.out.println(seat);
         }
-//
-//        System.out.println("\nUsers:");
-//        for (Member user : users) {
-//            System.out.println(user);
-//        }
-//
-//        System.out.println("\nReservations:");
-//        for (Reservation reservation : reservations) {
-//            System.out.println(reservation);
-//        }
+        
+        SeatRequest seatRequest = new SeatRequest(5, 5, 33L, 1L);
+        TicketRequest ticketRequest = new TicketRequest(12000, 12000, seatRequest);
+        ReservationRequest reservationRequest = new ReservationRequest(List.of(ticketRequest), PaymentMethodType.CARD, 1L);
+        userController.createReservation(reservationRequest);
     }
 
 }
