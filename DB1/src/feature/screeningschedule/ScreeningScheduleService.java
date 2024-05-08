@@ -22,6 +22,17 @@ public class ScreeningScheduleService {
 
 		return response;
 	}
+	
+	public List<ScreeningSchedule> findScreeningSchedulesByMovieId(Long movieId) {
+		List<ScreeningSchedule> response = new ArrayList<>();
+		try (Connection connection = DatabaseConfig.getConnectionUser()) {
+			response = screeningScheduleRepository.findByMovie(connection, movieId);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return response;
+	}
 
 	public ScreeningScheduleService(ScreeningScheduleRepository screeningScheduleRepository) {
 		this.screeningScheduleRepository = screeningScheduleRepository;

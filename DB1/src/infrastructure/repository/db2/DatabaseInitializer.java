@@ -15,18 +15,18 @@ public class DatabaseInitializer {
              Statement stmt = conn.createStatement()) {
 
             initializeDB2(stmt);
-            
-            createUser(stmt);
 
             createMovie(stmt);
             createScreen(stmt);
             createScreeningSchedule(stmt);
             createSeat(stmt);
-            createUser(stmt);
+            createMember(stmt);
             createReservation(stmt);
             createTicket(stmt);
 
             finalizeDatabaseSettings(stmt);
+
+            createUserAccount(stmt);
             
             insertMovieExampleSet(stmt);
             insertScreenExampleSet(stmt);
@@ -53,9 +53,27 @@ public class DatabaseInitializer {
     }
     
     private void createUserAccount(Statement stmt) throws SQLException {
-    	executeUpdate("CREATE USER 'user1'@'localhost' IDENTIFIED BY 'user1'", stmt);
-    	executeUpdate("GRANT SELECT, INSERT, UPDATE, DELETE ON db2.* TO 'user1'@'localhost'", stmt);
-    	executeUpdate("FLUSH PRIVILEGES'", stmt);
+    	executeUpdate("""
+				DELIMITER $$
+				
+				CREATE PROCEDURE CreateUserIfNeeded()
+				BEGIN
+				    DECLARE userExists INT;
+				    SET userExists = (SELECT COUNT(*) FROM mysql.user WHERE user = 'user1' AND host = 'localhost');
+				
+				    IF userExists = 0 THEN
+				        CREATE USER 'user1'@'localhost' IDENTIFIED BY 'user1';
+				        GRANT SELECT, INSERT, UPDATE, DELETE ON db2.* TO 'user1'@'localhost';
+				        FLUSH PRIVILEGES;
+				    END IF;
+				END$$
+				
+				DELIMITER ;
+				
+				CALL CreateUserIfNeeded();
+				
+				DROP PROCEDURE CreateUserIfNeeded;
+    			""", stmt);
     }
 
     private void createMovie(Statement stmt) throws SQLException {
@@ -123,35 +141,42 @@ public class DatabaseInitializer {
     private void createSeat(Statement stmt) throws SQLException {
         executeUpdate("DROP TABLE IF EXISTS `db2`.`seat`", stmt);
         executeUpdate("""
-                CREATE TABLE IF NOT EXISTS `db2`.`seat` (
-                  `seat_id` BIGINT NOT NULL AUTO_INCREMENT,
-                  `is_active` TINYINT NOT NULL DEFAULT 1,
-                  `row_number` INT NOT NULL,
-                  `col_number` INT NOT NULL,
-                  `screen_id` BIGINT NOT NULL,
-                  PRIMARY KEY (`seat_id`),
-                  INDEX `fk_seat_cinema1_idx` (`screen_id` ASC) VISIBLE,
-                  CONSTRAINT `fk_seat_cinema1`
-                    FOREIGN KEY (`screen_id`)
-                    REFERENCES `db2`.`screen` (`screen_id`)
-                    ON DELETE NO ACTION
-                    ON UPDATE NO ACTION
-                ) ENGINE = InnoDB
+				CREATE TABLE IF NOT EXISTS `db2`.`seat` (
+				  `seat_id` BIGINT NOT NULL AUTO_INCREMENT,
+				  `is_active` TINYINT NOT NULL DEFAULT 1,
+				  `row_number` INT NOT NULL,
+				  `col_number` INT NOT NULL,
+				  `screen_id` BIGINT NOT NULL,
+				  `screening_schedule_id` BIGINT NOT NULL,
+				  PRIMARY KEY (`seat_id`),
+				  INDEX `fk_seat_cinema1_idx` (`screen_id` ASC) VISIBLE,
+				  INDEX `fk_seat_screening_schedule1_idx` (`screening_schedule_id` ASC) VISIBLE,
+				  CONSTRAINT `fk_seat_cinema1`
+				    FOREIGN KEY (`screen_id`)
+				    REFERENCES `db2`.`screen` (`screen_id`)
+				    ON DELETE NO ACTION
+				    ON UPDATE NO ACTION,
+				  CONSTRAINT `fk_seat_screening_schedule1`
+				    FOREIGN KEY (`screening_schedule_id`)
+				    REFERENCES `db2`.`screening_schedule` (`schedule_id`)
+				    ON DELETE NO ACTION
+				    ON UPDATE NO ACTION)
+				ENGINE = InnoDB;
             """, stmt);
     }
 
-    private void createUser(Statement stmt) throws SQLException {
-        executeUpdate("DROP TABLE IF EXISTS `db2`.`user`", stmt);
+    private void createMember(Statement stmt) throws SQLException {
+        executeUpdate("DROP TABLE IF EXISTS `db2`.`member`", stmt);
         executeUpdate("""
-                CREATE TABLE IF NOT EXISTS `db2`.`user` (
-                  `user_id` BIGINT NOT NULL AUTO_INCREMENT,
-                  `name` VARCHAR(32) NOT NULL,
-                  `phone_number` VARCHAR(16) NOT NULL,
-                  `email` VARCHAR(32) NOT NULL,
-                  PRIMARY KEY (`user_id`),
-                  UNIQUE INDEX `phone_number_UNIQUE` (`phone_number` ASC) VISIBLE,
-                  UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE
-                ) ENGINE = InnoDB
+				CREATE TABLE IF NOT EXISTS `db2`.`member` (
+				  `member_id` BIGINT NOT NULL AUTO_INCREMENT,
+				  `name` VARCHAR(32) NOT NULL,
+				  `phone_number` VARCHAR(16) NOT NULL,
+				  `email` VARCHAR(32) NOT NULL,
+				  PRIMARY KEY (`member_id`),
+				  UNIQUE INDEX `phone_number_UNIQUE` (`phone_number` ASC) VISIBLE,
+				  UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE)
+				ENGINE = InnoDB;
             """, stmt);
     }
 
@@ -256,51 +281,22 @@ public class DatabaseInitializer {
 
     private void insertSeatExampleSet(Statement stmt) throws SQLException {
         executeUpdate("""
-            DELIMITER $$
-
-            CREATE PROCEDURE GenerateSeats()
-            BEGIN
-                DECLARE done INT DEFAULT FALSE;
-                DECLARE s_id BIGINT;
-                DECLARE r_size INT;
-                DECLARE c_size INT;
-                DECLARE cur1 CURSOR FOR SELECT screen_id, row_size, col_size FROM screen;
-                DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-
-                OPEN cur1;
-
-                read_loop: LOOP
-                    FETCH cur1 INTO s_id, r_size, c_size;
-                    IF done THEN
-                        LEAVE read_loop;
-                    END IF;
-
-                    CALL InsertSeats(s_id, r_size, c_size);
-                END LOOP;
-
-                CLOSE cur1;
-            END$$
-
-            CREATE PROCEDURE InsertSeats(IN screen_id BIGINT, IN row_size INT, IN col_size INT)
-            BEGIN
-                DECLARE r INT DEFAULT 1;
-                DECLARE c INT;
-                WHILE r <= row_size DO
-                    SET c = 1;
-                    WHILE c <= col_size DO
-                        INSERT INTO seat (is_active, `row_number`, `col_number`, screen_id) VALUES (1, r, c, screen_id);
-                        SET c = c + 1;
-                    END WHILE;
-                    SET r = r + 1;
-                END WHILE;
-            END$$
-
-            DELIMITER ;
-
-            CALL GenerateSeats();
-
-            DROP PROCEDURE IF EXISTS GenerateSeats;
-            DROP PROCEDURE IF EXISTS InsertSeats;
+			INSERT INTO seat (is_active, `row_number`, col_number, screen_id, screening_schedule_id) VALUES
+			(1, 1, 1, 1, 1),
+			(1, 1, 1, 2, 2),
+			(1, 1, 1, 3, 3),
+			(1, 1, 1, 4, 4),
+			(1, 2, 1, 1, 5),
+			(1, 2, 1, 2, 6),
+			(1, 2, 1, 3, 7),
+			(1, 2, 1, 4, 8),
+			(1, 3, 1, 1, 9),
+			(1, 3, 1, 2, 10),
+			(1, 3, 1, 3, 11),
+			(1, 3, 1, 4, 12),
+			(1, 1, 1, 1, 13),
+			(1, 1, 1, 2, 14),
+			(1, 1, 1, 3, 15);
         """, stmt);
     }
 
@@ -409,21 +405,21 @@ public class DatabaseInitializer {
 
     private void insertUserExampleSet(Statement stmt) throws SQLException {
         executeUpdate("""
-            INSERT INTO user (`name`, phone_number, email) VALUES
-            ('김정래', '010-9976-3892', 'kjr@google.com'),
-            ('김도형', '010-1234-0000', 'kdh@google.com'), 
-            ('이지우', '010-5678-1111', 'ljw@google.com'), 
-            ('박서윤', '010-9012-2222', 'bsy@google.com'),
-            ('최민준', '010-1234-3333', 'cmj@google.com'),
-            ('이서준', '010-5678-4444', 'lsj@google.com'), 
-            ('정서연', '010-9012-5555', 'jsy@google.com'), 
-            ('조도윤', '010-1234-6666', 'jdy@google.com'), 
-            ('강하윤', '010-5678-7777', 'khy@google.com'),
-            ('윤시우', '010-9012-8888', 'ysw@google.com'),
-            ('임민서', '010-1234-9999', 'lms@google.com'), 
-            ('장연우', '010-5678-0000', 'jyw@google.com'), 
-            ('김서형', '010-9012-1111', 'ksh@google.com'),
-            ('최주원', '010-1234-2222', 'cjw@google.com');
+            INSERT INTO member (`name`, phone_number, email) VALUES
+			('김정래', '010-9976-3892', 'kjr@google.com'),
+			('김도형', '010-1234-0000', 'kdh@google.com'), 
+			('이지우', '010-5678-1111', 'ljw@google.com'), 
+			('박서윤', '010-9012-2222', 'bsy@google.com'),
+			('최민준', '010-1234-3333', 'cmj@google.com'),
+			('이서준', '010-5678-4444', 'lsj@google.com'), 
+			('정서연', '010-9012-5555', 'jsy@google.com'), 
+			('조도윤', '010-1234-6666', 'jdy@google.com'), 
+			('강하윤', '010-5678-7777', 'khy@google.com'),
+			('윤시우', '010-9012-8888', 'ysw@google.com'),
+			('임민서', '010-1234-9999', 'lms@google.com'), 
+			('장연우', '010-5678-0000', 'jyw@google.com'), 
+			('김서형', '010-9012-1111', 'ksh@google.com'),
+			('최주원', '010-1234-2222', 'cjw@google.com'); 
         """, stmt);
     }
 
@@ -450,22 +446,22 @@ public class DatabaseInitializer {
 
     private void insertTicketExampleSet(Statement stmt) throws SQLException {
         executeUpdate("""
-            INSERT INTO ticket (screening_schedule_id, screen_id, seat_id, reservation_id, is_issued, standard_price, sale_price) VALUES
-            (1, 1, 1, 1, 0, 12000, 12000),
-            (2, 2, 201, 2, 0, 12000, 12000),
-            (3, 3, 401, 3, 0, 12000, 10000),
-            (4, 4, 561, 4, 0, 12000, 12000),
-            (5, 1, 2, 5, 0, 12000, 12000),
-            (6, 2, 202, 6, 0, 12000, 12000),
-            (7, 3, 402, 7, 0, 12000, 10000),
-            (8, 4, 562, 8, 0, 12000, 12000),
-            (9, 1, 3, 9, 0, 12000, 12000),
-            (10, 2, 203, 10, 0, 12000, 12000),
-            (11, 3, 403, 11, 0, 12000, 10000),
-            (12, 4, 563, 12, 0, 12000, 12000),
-            (13, 1, 4, 13, 0, 12000, 12000),
-            (14, 2, 204, 14, 0, 12000, 12000),
-            (15, 3, 404, 15, 0, 12000, 10000);
+			INSERT INTO ticket (screening_schedule_id, screen_id, seat_id, reservation_id, is_issued, standard_price, sale_price) VALUES
+			(1, 1, 1, 1, 0, 12000, 12000),
+			(2, 2, 2, 2, 0, 12000, 12000),
+			(3, 3, 3, 3, 0, 12000, 10000),
+			(4, 4, 4, 4, 0, 12000, 12000),
+			(5, 1, 5, 5, 0, 12000, 12000),
+			(6, 2, 6, 6, 0, 12000, 12000),
+			(7, 3, 7, 7, 0, 12000, 10000),
+			(8, 4, 8, 8, 0, 12000, 12000),
+			(9, 1, 9, 9, 0, 12000, 12000),
+			(10, 2, 10, 10, 0, 12000, 12000),
+			(11, 3, 11, 11, 0, 12000, 10000),
+			(12, 4, 12, 12, 0, 12000, 12000),
+			(13, 1, 13, 13, 0, 12000, 12000),
+			(14, 2, 14, 14, 0, 12000, 12000),
+			(15, 3, 15, 15, 0, 12000, 10000);
         """, stmt);
     }
 

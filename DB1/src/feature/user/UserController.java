@@ -3,6 +3,8 @@ package feature.user;
 import java.util.List;
 
 import core.domain.movie.Movie;
+import core.domain.screeningschedule.ScreeningSchedule;
+import core.domain.seat.Seat;
 import feature.member.MemberService;
 import feature.movie.MovieService;
 import feature.movie.SearchCriteria;
@@ -23,9 +25,19 @@ public class UserController {
 
     // SELECT
 
+    // 필터링 검색
     public List<Movie> searchMovies(SearchCriteria criteria) {
         return movieService.findMovieByCriteria(criteria);
     }
+    
+    // 영화 기준, 상영일정 조회
+    public List<ScreeningSchedule> getScreeningScheduleByMovieId(Long movieId) {
+    	return screeningScheduleService.findScreeningSchedulesByMovieId(movieId);
+    }
+    
+    public List<Seat> getUnavailableSeats(Long screeningScheduleId) {
+		return seatService.findUnavailableSeats(screeningScheduleId);
+	}
 
     // INSERT
 

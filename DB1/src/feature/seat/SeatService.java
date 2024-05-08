@@ -14,8 +14,21 @@ public class SeatService {
 
     public List<Seat> findAllSeats() {
         List<Seat> response = new ArrayList<>();
+        
         try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
             response = seatRepository.findAllSeats(connection);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return response;
+    }
+    
+    public List<Seat> findUnavailableSeats(Long screeningScheduleId) {
+        List<Seat> response = new ArrayList<>();
+        
+        try (Connection connection = DatabaseConfig.getConnectionUser()) {
+            response = seatRepository.findReservedSeats(connection, screeningScheduleId);
         } catch (SQLException e) {
             e.printStackTrace();
         }

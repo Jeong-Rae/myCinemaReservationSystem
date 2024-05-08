@@ -26,6 +26,23 @@ public class ScreeningScheduleRepository {
 
         return response;
     }
+    
+    public List<ScreeningSchedule> findByMovie(Connection connection, Long movieId) {
+        String sql = "SELECT * FROM screening_schedule WHERE movie_id = " + movieId;
+        List<ScreeningSchedule> response = new ArrayList<>();
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                ScreeningSchedule screeningSchedule = ScreeningSchedule.RsToScreeningSchedule(rs);
+                response.add(screeningSchedule);
+            }
+        } catch (SQLException e) {
+            System.out.println("ScreeningSchedule 테이블 조회 실패");
+            e.printStackTrace();
+        }
+
+        return response;
+    }
 
     public ScreeningScheduleRepository() {
     }
