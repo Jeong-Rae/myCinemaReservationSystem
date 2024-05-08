@@ -5,7 +5,7 @@ import java.util.Date;
 public class ScreeningSchedule {
 	private Long scheduleId;
 	private Date startDate;
-	private String startTime;
+	private String startTime; // "HH:MM:SS"
 	private DayOfWeekType dayOfWeek;
 	private int sessionNumber;
 	private Long movieId;
