@@ -1,4 +1,4 @@
-package domain.screeningschedule;
+package core.domain.screeningschedule;
 
 import java.util.Date;
 

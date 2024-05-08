@@ -1,4 +1,4 @@
-package domain.movie;
+package core.domain.movie;
 
 public enum RatingType {
 	G("전체관람가"), G12("12세이상관람가"), R15("15세이상관람가"), R18("청소년관람불가");

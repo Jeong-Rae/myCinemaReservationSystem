@@ -1,4 +1,4 @@
-package domain.seat;
+package core.domain.seat;
 
 public class Seat {
 	private Long seatId;

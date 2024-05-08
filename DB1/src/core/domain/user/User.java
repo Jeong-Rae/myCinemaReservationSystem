@@ -1,4 +1,4 @@
-package domain.user;
+package core.domain.user;
 
 public class User {
 	private Long userId;

@@ -1,4 +1,4 @@
-package domain.screeningschedule;
+package core.domain.screeningschedule;
 
 public enum DayOfWeekType {
 	SUN, MON, TUE, WED, THU, FRI, SAT

@@ -1,4 +1,4 @@
-package domain.ticket;
+package core.domain.ticket;
 
 public class Ticket {
 	private Long ticketId;

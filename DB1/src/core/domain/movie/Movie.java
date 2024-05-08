@@ -1,4 +1,4 @@
-package domain.movie;
+package core.domain.movie;
 
 import java.util.Date;
 

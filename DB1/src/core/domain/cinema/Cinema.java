@@ -1,4 +1,4 @@
-package domain.cinema;
+package core.domain.cinema;
 
 public class Cinema {
 	private Long cinemaId;

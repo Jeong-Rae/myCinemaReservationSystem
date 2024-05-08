@@ -1,4 +1,4 @@
-package domain.reservation;
+package core.domain.reservation;
 
 import java.util.Date;
 
