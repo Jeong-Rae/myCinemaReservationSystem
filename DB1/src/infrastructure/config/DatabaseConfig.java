@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class DatabaseConnectionConfig {
+public class DatabaseConfig {
 	private static final String DB_URL = "jdbc:mysql://localhost:3306/db2";
 	private static final String ROOT = "root";
 	private static final String ROOT_PASSWORD = "1234";
@@ -12,7 +12,7 @@ public class DatabaseConnectionConfig {
 	private static final String USER_PASSWORD = "user1";
 	
 	
-	public Connection getConnectionAdmin() {
+	public static Connection getConnectionAdmin() {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver"); // MySQL 드라이버 로드
 			Connection conn = DriverManager.getConnection(DB_URL, ROOT, ROOT_PASSWORD); // JDBC 연결
@@ -27,7 +27,7 @@ public class DatabaseConnectionConfig {
 		return null;
 	}
 	
-	public Connection getConnectionUSER() {
+	public static Connection getConnectionUSER() {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			Connection conn = DriverManager.getConnection(DB_URL, USER, USER_PASSWORD);
