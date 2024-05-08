@@ -1,4 +1,4 @@
-package feature.admin;
+package feature.user;
 
 import java.util.List;
 
@@ -16,9 +16,8 @@ import feature.screen.ScreenService;
 import feature.screeningschedule.ScreeningScheduleService;
 import feature.seat.SeatService;
 import feature.ticket.TicketService;
-import infrastructure.repository.db2.DatabaseInitializer;
 
-public class AdminController {
+public class UserController {
     private final MovieService movieService;
     private final ScreenService screenService;
     private final ScreeningScheduleService screeningScheduleService;
@@ -26,12 +25,6 @@ public class AdminController {
     private final SeatService seatService;
     private final MemberService memberService;
     private final ReservationService reservationService;
-
-    // DB 초기화
-    public void initializeDatabase() {
-        DatabaseInitializer databaseInitializer = new DatabaseInitializer();
-        databaseInitializer.initializeDatabase();
-    }
 
     // SELECT
 
@@ -69,7 +62,7 @@ public class AdminController {
 
     // UPDATE
 
-    public AdminController(
+    public UserController(
             MovieService movieService,
             ScreenService screenService,
             ScreeningScheduleService screeningScheduleService,

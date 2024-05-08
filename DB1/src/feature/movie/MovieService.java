@@ -24,6 +24,14 @@ public class MovieService {
 		return response;
 	}
 	
+	public List<Movie> findMovieByCriteria(SearchCriteria searchCriteria) {
+		List<Movie> response = new ArrayList<Movie>();
+		
+		
+		
+		return response;
+	}
+	
 	
 	public MovieService(MovieRepository movieRepository) {
 		this.movieRepository = movieRepository;

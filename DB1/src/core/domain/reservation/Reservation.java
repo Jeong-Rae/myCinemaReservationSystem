@@ -10,7 +10,7 @@ public class Reservation {
 	private PaymentStatusType paymentStatus;
 	private int amount;
 	private Date paymentDate;
-	private Long userId;
+	private Long memberId;
 
 	public Reservation(PaymentMethodType paymentMethod, PaymentStatusType paymentStatus, int amount, Date paymentDate) {
 		this.paymentMethod = paymentMethod;
@@ -59,19 +59,19 @@ public class Reservation {
 		this.paymentDate = paymentDate;
 	}
 
-	public long getUserId() {
-		return this.userId;
+	public long getMemberId() {
+		return this.memberId;
 	}
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
+	public void setMemberId(Long memberId) {
+		this.memberId = memberId;
 	}
 
 	@Override
 	public String toString() {
 		return "Reservation[" + "reservationId=" + this.reservationId + ", paymentMethod='" + this.paymentMethod + '\''
 				+ ", paymentStatus='" + this.paymentStatus + '\'' + ", amount=" + this.amount + ", paymentDate="
-				+ this.paymentDate + ", userId=" + this.userId + ']';
+				+ this.paymentDate + ", userId=" + this.memberId + ']';
 	}
 	
 	public static Reservation RsToReservation(ResultSet rs) throws SQLException {
@@ -80,11 +80,11 @@ public class Reservation {
 	    PaymentStatusType paymentStatus = PaymentStatusType.valueOf(rs.getString("payment_status"));
 	    int amount = rs.getInt("amount");
 	    Date paymentDate = rs.getDate("payment_date");
-	    Long userId = rs.getLong("user_id");
+	    Long memberId = rs.getLong("member_id");
 
 	    Reservation reservation = new Reservation(paymentMethod, paymentStatus, amount, paymentDate);
 	    reservation.setReservationId(reservationId);
-	    reservation.setUserId(userId);
+	    reservation.setMemberId(memberId);
 	    
 	    return reservation;
 	}

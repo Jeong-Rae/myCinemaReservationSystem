@@ -1,26 +1,26 @@
-package core.domain.user;
+package core.domain.member;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class User {
-	private Long userId;
+public class Member {
+	private Long memberId;
 	private String name;
 	private String phoneNumber;
 	private String email;
 
-	public User(String name, String phoneNumber, String email) {
+	public Member(String name, String phoneNumber, String email) {
 		this.name = name;
 		this.phoneNumber = phoneNumber;
 		this.email = email;
 	}
 
-	public long getUserId() {
-		return this.userId;
+	public long getMemberId() {
+		return this.memberId;
 	}
 	
-	public void setUserId(Long userId) {
-		this.userId = userId;
+	public void setMemberId(Long memberId) {
+		this.memberId = memberId;
 	}
 
 	public String getName() {
@@ -49,18 +49,18 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User[" + "userId=" + this.userId + ", name='" + this.name + '\'' + ", phoneNumber='" + this.phoneNumber
+		return "User[" + "userId=" + this.memberId + ", name='" + this.name + '\'' + ", phoneNumber='" + this.phoneNumber
 				+ '\'' + ", email='" + this.email + '\'' + ']';
 	}
 	
-	public static User RsToUser(ResultSet rs) throws SQLException {
-	    Long userId = rs.getLong("user_id");
+	public static Member RsToUser(ResultSet rs) throws SQLException {
+	    Long memberId = rs.getLong("member_id");
 	    String name = rs.getString("name");
 	    String phoneNumber = rs.getString("phone_number");
 	    String email = rs.getString("email");
 
-	    User user = new User(name, phoneNumber, email);
-	    user.setUserId(userId);
+	    Member user = new Member(name, phoneNumber, email);
+	    user.setMemberId(memberId);
 
 	    return user;
 	}

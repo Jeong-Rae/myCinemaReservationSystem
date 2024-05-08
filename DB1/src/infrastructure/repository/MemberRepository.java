@@ -7,17 +7,17 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import core.domain.user.User;
+import core.domain.member.Member;
 
-public class UserRepository {
-    public List<User> findAllUsers(Connection conn) {
+public class MemberRepository {
+    public List<Member> findAllUsers(Connection conn) {
         String sql = "SELECT * FROM user";
-        List<User> response = new ArrayList<>();
+        List<Member> response = new ArrayList<>();
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
-                User user = User.RsToUser(rs);
-                response.add(user);
+                Member member = Member.RsToUser(rs);
+                response.add(member);
             }
         } catch (SQLException e) {
             System.out.println("User 테이블 조회 실패");
@@ -27,6 +27,6 @@ public class UserRepository {
         return response;
     }
 
-    public UserRepository() {
+    public MemberRepository() {
     }
 }

@@ -1,19 +1,19 @@
-package feature.user;
+package feature.member;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import core.domain.user.User;
+import core.domain.member.Member;
 import infrastructure.config.DatabaseConfig;
-import infrastructure.repository.UserRepository;
+import infrastructure.repository.MemberRepository;
 
-public class UserService {
-    private final UserRepository userRepository;
+public class MemberService {
+    private final MemberRepository userRepository;
 
-    public List<User> findAllUsers() {
-        List<User> response = new ArrayList<>();
+    public List<Member> findAllMembers() {
+        List<Member> response = new ArrayList<>();
         try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
             response = userRepository.findAllUsers(connection);
         } catch (SQLException e) {
@@ -23,7 +23,7 @@ public class UserService {
         return response;
     }
 
-    public UserService(UserRepository userRepository) {
+    public MemberService(MemberRepository userRepository) {
         this.userRepository = userRepository;
     }
 }
