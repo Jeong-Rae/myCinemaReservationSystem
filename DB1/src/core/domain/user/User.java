@@ -1,5 +1,8 @@
 package core.domain.user;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class User {
 	private Long userId;
 	private String name;
@@ -14,6 +17,10 @@ public class User {
 
 	public long getUserId() {
 		return this.userId;
+	}
+	
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
 	public String getName() {
@@ -44,5 +51,17 @@ public class User {
 	public String toString() {
 		return "User[" + "userId=" + this.userId + ", name='" + this.name + '\'' + ", phoneNumber='" + this.phoneNumber
 				+ '\'' + ", email='" + this.email + '\'' + ']';
+	}
+	
+	public static User RsToUser(ResultSet rs) throws SQLException {
+	    Long userId = rs.getLong("user_id");
+	    String name = rs.getString("name");
+	    String phoneNumber = rs.getString("phone_number");
+	    String email = rs.getString("email");
+
+	    User user = new User(name, phoneNumber, email);
+	    user.setUserId(userId);
+
+	    return user;
 	}
 }

@@ -1,5 +1,8 @@
 package core.domain.ticket;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class Ticket {
 	private Long ticketId;
 	private boolean isIssued;
@@ -18,6 +21,10 @@ public class Ticket {
 
 	public Long getTicketId() {
 		return this.ticketId;
+	}
+	
+	public void setTicketId(Long ticketId) {
+		this.ticketId = ticketId;
 	}
 
 	public boolean getIsIssued() {
@@ -82,5 +89,25 @@ public class Ticket {
 				+ this.standardPrice + ", salePrice=" + this.salePrice + ", screeningScheduleId="
 				+ this.screeningScheduleId + ", screenId=" + this.screenId + ", reservationId=" + this.reservationId
 				+ ", seatId=" + this.seatId + ']';
+	}
+	
+	public static Ticket RsToTicket(ResultSet rs) throws SQLException {
+	    Long ticketId = rs.getLong("ticket_id");
+	    boolean isIssued = rs.getBoolean("is_issued");
+	    int standardPrice = rs.getInt("standard_price");
+	    int salePrice = rs.getInt("sale_price");
+	    Long screeningScheduleId = rs.getLong("screening_schedule_id");
+	    Long screenId = rs.getLong("screen_id");
+	    Long reservationId = rs.getLong("reservation_id");
+	    Long seatId = rs.getLong("seat_id");
+
+	    Ticket ticket = new Ticket(isIssued, standardPrice, salePrice);
+	    ticket.setTicketId(ticketId);
+	    ticket.setScreeningScheduleId(screeningScheduleId);
+	    ticket.setScreenId(screenId);
+	    ticket.setReservationId(reservationId);
+	    ticket.setSeatId(seatId);
+
+	    return ticket;
 	}
 }

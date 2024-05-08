@@ -1,5 +1,8 @@
 package core.domain.screen;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class Screen {
 	private Long screenId;
 	private String name;
@@ -14,12 +17,12 @@ public class Screen {
 		this.seatCol = seatCol;
 	}
 
-	public long getCinemaId() {
+	public long getScreenId() {
 		return this.screenId;
 	}
-
-	public void updateCinemaId(Long cinemaId) {
-		this.screenId = cinemaId;
+	
+	public void setScreenId(Long screenId) {
+		this.screenId = screenId;
 	}
 
 	public String getName() {
@@ -58,5 +61,18 @@ public class Screen {
 	public String toString() {
 		return "Cinema[" + "cinemaId=" + this.screenId + ", name=\"" + this.name + "\"" + ", isActive=" + this.isActive
 				+ ", seatRow=" + this.seatRow + ", seatCol=" + this.seatCol + ']';
+	}
+	
+	public static Screen RsToScreen(ResultSet rs) throws SQLException {
+	    Long screenId = rs.getLong("screen_id");
+	    String name = rs.getString("name");
+	    boolean isActive = rs.getBoolean("is_active");
+	    int rowSize = rs.getInt("row_size");
+	    int colSize = rs.getInt("col_size");
+
+	    Screen screen = new Screen(name, isActive, rowSize, colSize);
+	    screen.setScreenId(screenId);
+
+	    return screen;
 	}
 }

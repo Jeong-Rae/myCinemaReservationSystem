@@ -1,5 +1,7 @@
 package core.domain.screeningschedule;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
 
 public class ScreeningSchedule {
@@ -20,6 +22,10 @@ public class ScreeningSchedule {
 
 	public Long getScheduleId() {
 		return this.scheduleId;
+	}
+	
+	public void setScheduleId(Long scheduleId) {
+		this.scheduleId = scheduleId;
 	}
 
 	public Date getStartDate() {
@@ -75,5 +81,22 @@ public class ScreeningSchedule {
 		return "ScreeningSchedule[" + "scheduleId=" + this.scheduleId + ", startDate=" + this.startDate + ", startTime="
 				+ this.startTime + ", dayOfWeek='" + this.dayOfWeek + '\'' + ", sessionNumber=" + this.sessionNumber
 				+ ", movieId=" + this.movieId + ", screenId=" + this.screenId + ']';
+	}
+	
+	public static ScreeningSchedule RsToScreeningSchedule(ResultSet rs) throws SQLException {
+	    Long scheduleId = rs.getLong("schedule_id");
+	    Date startDate = rs.getDate("start_date");
+	    String startTime = rs.getString("start_time");
+	    DayOfWeekType dayOfWeek = DayOfWeekType.valueOf(rs.getString("day_of_week"));
+	    int sessionNumber = rs.getInt("session_number");
+	    Long movieId = rs.getLong("movie_id");
+	    Long screenId = rs.getLong("screen_id");
+
+	    ScreeningSchedule screeningSchedule = new ScreeningSchedule(startDate, startTime, dayOfWeek, sessionNumber);
+	    screeningSchedule.setScheduleId(scheduleId);
+	    screeningSchedule.setMovieId(movieId);
+	    screeningSchedule.setScreenId(screenId);
+
+	    return screeningSchedule;
 	}
 }

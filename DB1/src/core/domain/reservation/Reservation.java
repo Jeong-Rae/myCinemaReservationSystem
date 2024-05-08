@@ -1,5 +1,7 @@
 package core.domain.reservation;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
 
 public class Reservation {
@@ -19,6 +21,10 @@ public class Reservation {
 
 	public Long getReservationId() {
 		return this.reservationId;
+	}
+	
+	public void setReservationId(Long reservationId) {
+		this.reservationId = reservationId;
 	}
 
 	public PaymentMethodType getPaymentMethod() {
@@ -66,5 +72,20 @@ public class Reservation {
 		return "Reservation[" + "reservationId=" + this.reservationId + ", paymentMethod='" + this.paymentMethod + '\''
 				+ ", paymentStatus='" + this.paymentStatus + '\'' + ", amount=" + this.amount + ", paymentDate="
 				+ this.paymentDate + ", userId=" + this.userId + ']';
+	}
+	
+	public static Reservation RsToReservation(ResultSet rs) throws SQLException {
+	    Long reservationId = rs.getLong("reservation_id");
+	    PaymentMethodType paymentMethod = PaymentMethodType.valueOf(rs.getString("payment_method"));
+	    PaymentStatusType paymentStatus = PaymentStatusType.valueOf(rs.getString("payment_status"));
+	    int amount = rs.getInt("amount");
+	    Date paymentDate = rs.getDate("payment_date");
+	    Long userId = rs.getLong("user_id");
+
+	    Reservation reservation = new Reservation(paymentMethod, paymentStatus, amount, paymentDate);
+	    reservation.setReservationId(reservationId);
+	    reservation.setUserId(userId);
+	    
+	    return reservation;
 	}
 }
