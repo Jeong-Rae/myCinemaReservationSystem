@@ -9,7 +9,7 @@ public class ScreeningSchedule {
 	private DayOfWeekType dayOfWeek;
 	private int sessionNumber;
 	private Long movieId;
-	private Long cinemaId;
+	private Long screenId;
 
 	public ScreeningSchedule(Date startDate, String startTime, DayOfWeekType dayOfWeek, int sessionNumber) {
 		this.startDate = startDate;
@@ -62,18 +62,18 @@ public class ScreeningSchedule {
 		this.movieId = movieId;
 	}
 
-	public long getCinemaId() {
-		return this.cinemaId;
+	public long getScreenId() {
+		return this.screenId;
 	}
 
-	public void setCinemaId(Long cinemaId) {
-		this.cinemaId = cinemaId;
+	public void setScreenId(Long cinemaId) {
+		this.screenId = cinemaId;
 	}
 
 	@Override
 	public String toString() {
 		return "ScreeningSchedule[" + "scheduleId=" + this.scheduleId + ", startDate=" + this.startDate + ", startTime="
 				+ this.startTime + ", dayOfWeek='" + this.dayOfWeek + '\'' + ", sessionNumber=" + this.sessionNumber
-				+ ", movieId=" + this.movieId + ", cinemaId=" + this.cinemaId + ']';
+				+ ", movieId=" + this.movieId + ", screenId=" + this.screenId + ']';
 	}
 }

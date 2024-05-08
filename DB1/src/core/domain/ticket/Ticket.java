@@ -6,7 +6,7 @@ public class Ticket {
 	private int standardPrice;
 	private int salePrice;
 	private Long screeningScheduleId;
-	private Long cinemaId;
+	private Long screenId;
 	private Long reservationId;
 	private Long seatId;
 
@@ -52,12 +52,12 @@ public class Ticket {
 		this.screeningScheduleId = screeningScheduleId;
 	}
 
-	public Long getCinemaId() {
-		return this.cinemaId;
+	public Long getScreenId() {
+		return this.screenId;
 	}
 
-	public void setCinemaId(Long cinemaId) {
-		this.cinemaId = cinemaId;
+	public void setScreenId(Long cinemaId) {
+		this.screenId = cinemaId;
 	}
 
 	public Long getReservationId() {
@@ -80,7 +80,7 @@ public class Ticket {
 	public String toString() {
 		return "Ticket[" + "ticketId=" + this.ticketId + ", isIssued=" + this.isIssued + ", standardPrice="
 				+ this.standardPrice + ", salePrice=" + this.salePrice + ", screeningScheduleId="
-				+ this.screeningScheduleId + ", cinemaId=" + this.cinemaId + ", reservationId=" + this.reservationId
+				+ this.screeningScheduleId + ", screenId=" + this.screenId + ", reservationId=" + this.reservationId
 				+ ", seatId=" + this.seatId + ']';
 	}
 }

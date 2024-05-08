@@ -1,13 +1,13 @@
-package core.domain.cinema;
+package core.domain.screen;
 
-public class Cinema {
-	private Long cinemaId;
+public class Screen {
+	private Long screenId;
 	private String name;
 	private boolean isActive;
 	private int seatRow;
 	private int seatCol;
 
-	public Cinema(String name, boolean isActive, int seatRow, int seatCol) {
+	public Screen(String name, boolean isActive, int seatRow, int seatCol) {
 		this.name = name;
 		this.isActive = isActive;
 		this.seatRow = seatRow;
@@ -15,11 +15,11 @@ public class Cinema {
 	}
 
 	public long getCinemaId() {
-		return this.cinemaId;
+		return this.screenId;
 	}
 
 	public void updateCinemaId(Long cinemaId) {
-		this.cinemaId = cinemaId;
+		this.screenId = cinemaId;
 	}
 
 	public String getName() {
@@ -56,7 +56,7 @@ public class Cinema {
 
 	@Override
 	public String toString() {
-		return "Cinema[" + "cinemaId=" + this.cinemaId + ", name=\"" + this.name + "\"" + ", isActive=" + this.isActive
+		return "Cinema[" + "cinemaId=" + this.screenId + ", name=\"" + this.name + "\"" + ", isActive=" + this.isActive
 				+ ", seatRow=" + this.seatRow + ", seatCol=" + this.seatCol + ']';
 	}
 }
