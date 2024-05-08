@@ -26,8 +26,12 @@ public class MovieService {
 	
 	public List<Movie> findMovieByCriteria(SearchCriteria searchCriteria) {
 		List<Movie> response = new ArrayList<Movie>();
+		try(Connection connection = DatabaseConfig.getConnectionUser()) {
+			response = movieRepository.findMoviesByFilter(connection, searchCriteria);
 		
-		
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		
 		return response;
 	}

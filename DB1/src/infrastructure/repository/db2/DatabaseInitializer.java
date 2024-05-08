@@ -15,6 +15,8 @@ public class DatabaseInitializer {
              Statement stmt = conn.createStatement()) {
 
             initializeDB2(stmt);
+            
+            createUser(stmt);
 
             createMovie(stmt);
             createScreen(stmt);
@@ -48,6 +50,12 @@ public class DatabaseInitializer {
         executeUpdate("DROP SCHEMA IF EXISTS `db2`", stmt);
         executeUpdate("CREATE SCHEMA IF NOT EXISTS `db2` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci", stmt);
         executeUpdate("USE `db2`", stmt);
+    }
+    
+    private void createUserAccount(Statement stmt) throws SQLException {
+    	executeUpdate("CREATE USER 'user1'@'localhost' IDENTIFIED BY 'user1'", stmt);
+    	executeUpdate("GRANT SELECT, INSERT, UPDATE, DELETE ON db2.* TO 'user1'@'localhost'", stmt);
+    	executeUpdate("FLUSH PRIVILEGES'", stmt);
     }
 
     private void createMovie(Statement stmt) throws SQLException {

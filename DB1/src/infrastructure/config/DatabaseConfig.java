@@ -27,7 +27,7 @@ public class DatabaseConfig {
 		return null;
 	}
 	
-	public static Connection getConnectionUSER() {
+	public static Connection getConnectionUser() {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			Connection conn = DriverManager.getConnection(DB_URL, USER, USER_PASSWORD);
