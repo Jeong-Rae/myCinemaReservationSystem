@@ -1,5 +1,6 @@
 package feature.user;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import core.domain.movie.Movie;
@@ -12,6 +13,7 @@ import feature.member.MemberService;
 import feature.movie.MovieService;
 import feature.movie.SearchCriteria;
 import feature.reservation.ReservationRequest;
+import feature.reservation.ReservationResponse;
 import feature.reservation.ReservationService;
 import feature.screen.ScreenService;
 import feature.screeningschedule.ScreeningScheduleService;
@@ -40,26 +42,33 @@ public class UserController {
     	return screeningScheduleService.findScreeningSchedulesByMovieId(movieId);
     }
     
+    // 예약 불가 좌석 조회
     public List<Seat> getUnavailableSeats(Long screeningScheduleId) {
 		return seatService.findUnavailableSeats(screeningScheduleId);
 	}
 
     // INSERT
     
-    public void createReservation(ReservationRequest request) {
+    // 예약 생성
+    public ReservationResponse createReservation(ReservationRequest request) {
     	List<TicketRequest> ticketRequests = request.ticketRequests();
     	Reservation reservation = reservationService.createReservation(request);
     	
+    	List<Ticket> tickets = new ArrayList<Ticket>();
     	for (TicketRequest ticketRequest : ticketRequests) {
     		// 좌석 저장
     		SeatRequest seatRequest = ticketRequest.seatRequest();
     		Seat seat = seatService.createSeat(seatRequest);
-    		System.out.println("[createReservation] seat: " + seat);
     		
     		//티켓 저장
     		Ticket ticket = ticketService.createTicket(ticketRequest, seat, reservation);
-    		System.out.println("[createReservation] ticket: " + ticket);
+    		tickets.add(ticket);
     	}
+    	
+    	System.out.println("[createReservation] 예약 완료");
+    	ReservationResponse response = new ReservationResponse(reservation, tickets);
+    	
+    	return response;
     }
 
     // DELETE
