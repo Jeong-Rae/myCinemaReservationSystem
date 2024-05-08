@@ -8,7 +8,7 @@ public class Reservation {
 	private PaymentStatusType paymentStatus;
 	private int amount;
 	private Date paymentDate;
-	private long userId;
+	private Long userId;
 
 	public Reservation(PaymentMethodType paymentMethod, PaymentStatusType paymentStatus, int amount, Date paymentDate) {
 		this.paymentMethod = paymentMethod;
@@ -57,7 +57,7 @@ public class Reservation {
 		return this.userId;
 	}
 
-	public void setUserId(long userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 
