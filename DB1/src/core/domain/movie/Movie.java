@@ -1,5 +1,7 @@
 package core.domain.movie;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
 
 public class Movie {
@@ -29,6 +31,10 @@ public class Movie {
 
 	public long getMovieId() {
 		return this.movieId;
+	}
+	
+	public void setMovieId(Long movieId) {
+		this.movieId = movieId;
 	}
 
 	public String getTitle() {
@@ -109,5 +115,23 @@ public class Movie {
 				+ '\'' + ", rating='" + this.rating + '\'' + ", director='" + this.director + '\'' + ", actor='"
 				+ this.actor + '\'' + ", genre='" + this.genre + '\'' + ", description='" + this.description + '\''
 				+ ", releaseDate=" + this.releaseDate + ", score=" + this.score + ']';
+	}
+	
+	public static Movie RsToMovie(ResultSet rs) throws SQLException {
+		Long movieId = rs.getLong("movie_id");
+        String title = rs.getString("title");
+        String duration = rs.getString("duration");
+        RatingType rating = RatingType.descriptionToEnum(rs.getString("rating"));
+        String director = rs.getString("director");
+        String actor = rs.getString("actor");
+        String genre = rs.getString("genre");
+        String description = rs.getString("description");
+        Date releaseDate = new Date(rs.getDate("relase_date").getTime());
+        double score = rs.getDouble("score");
+        
+        Movie movie = new Movie(title, duration, rating, director, actor, genre, description, releaseDate, score);
+        movie.setMovieId(movieId);
+        
+        return movie;
 	}
 }
