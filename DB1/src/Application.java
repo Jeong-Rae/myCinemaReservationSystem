@@ -10,6 +10,7 @@ import feature.member.MemberService;
 import feature.movie.MovieService;
 import feature.movie.SearchCriteria;
 import feature.reservation.ReservationRequest;
+import feature.reservation.ReservationResponse;
 import feature.reservation.ReservationService;
 import feature.screen.ScreenService;
 import feature.screeningschedule.ScreeningScheduleService;
@@ -69,6 +70,7 @@ public class Application {
                 reservationService
         );
 
+        // 필터조회
         List<Movie> movies = userController.searchMovies(new SearchCriteria("기생충", null, null, null));
 
         System.out.println("Movies:");
@@ -77,6 +79,7 @@ public class Application {
         }
         
 
+        // 상영일정 조회
         List<ScreeningSchedule> screeningSchedules = userController.getScreeningScheduleByMovieId(movies.get(0).getMovieId());
         
         System.out.println("\nScreening Schedules:");
@@ -85,16 +88,21 @@ public class Application {
         }
 
        
+        // 선택 가능 좌석 확인
         List<Seat> seats = userController.getUnavailableSeats(1L);
         System.out.println("\nSeats:");
         for (Seat seat : seats) {
             System.out.println(seat);
         }
         
+        // 예약진행
         SeatRequest seatRequest = new SeatRequest(5, 5, 33L, 1L);
         TicketRequest ticketRequest = new TicketRequest(12000, 12000, seatRequest);
         ReservationRequest reservationRequest = new ReservationRequest(List.of(ticketRequest), PaymentMethodType.CARD, 1L);
-        userController.createReservation(reservationRequest);
+        ReservationResponse reservationResponse = userController.createReservation(reservationRequest);
+        System.out.println(reservationResponse);
+        
+        
     }
 
 }
