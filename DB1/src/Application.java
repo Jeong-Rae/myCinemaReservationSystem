@@ -6,6 +6,8 @@ import core.domain.screeningschedule.ScreeningSchedule;
 import core.domain.seat.Seat;
 import core.domain.ticket.TicketRequest;
 import feature.admin.AdminController;
+import feature.auth.AuthController;
+import feature.auth.AuthService;
 import feature.member.MemberService;
 import feature.movie.MovieService;
 import feature.movie.SearchCriteria;
@@ -50,6 +52,7 @@ public class Application {
         ReservationRepository reservationRepository = new ReservationRepository();
         ReservationService reservationService = new ReservationService(reservationRepository);
 
+        // 관리자 컨트롤러
         AdminController adminController = new AdminController(
                 movieService,
                 screenService,
@@ -60,6 +63,7 @@ public class Application {
                 reservationService
         );
         
+        // 사용자 컨트롤러
         UserController userController = new UserController(
                 movieService,
                 screenService,
@@ -69,6 +73,13 @@ public class Application {
                 memberService,
                 reservationService
         );
+        
+        
+        // auth 컨트롤러
+        AuthService authService = new AuthService(memberRepository);
+        AuthController authController = new AuthController(authService); 
+        
+        authController.login("admin", "1234");
 
         // 필터조회
         List<Movie> movies = userController.searchMovies(new SearchCriteria("기생충", null, null, null));

@@ -36,6 +36,27 @@ public class MovieService {
 		return response;
 	}
 	
+	public int updateTuple(String setClause) {
+		try(Connection connection = DatabaseConfig.getConnectionAdmin()) {
+			return movieRepository.updateMovieBySqlNative(connection, setClause);
+		} catch (SQLException e) {
+			System.out.println("[updateTuple] 영화 업데이트 실패");
+			e.printStackTrace();
+		}
+		
+		return 0;
+	}
+	
+	public int deleteTuple(String whereClause) {
+		try(Connection connection = DatabaseConfig.getConnectionAdmin()) {
+			return movieRepository.deleteMovieBySqlNative(connection, whereClause);
+		} catch (SQLException e) {
+			System.out.println("[deleteTuple] 영화 삭제 실패");
+			e.printStackTrace();
+		}
+		
+		return 0;
+	}
 	
 	public MovieService(MovieRepository movieRepository) {
 		this.movieRepository = movieRepository;

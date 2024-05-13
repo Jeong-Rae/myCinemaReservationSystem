@@ -23,6 +23,26 @@ public class MemberService {
         return response;
     }
 
+    public int updateMember(String setClause) {
+        try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
+            return userRepository.updateMemberBySqlNative(connection, setClause);
+        } catch (SQLException e) {
+            System.out.println("[updateMember] 멤버 업데이트 실패");
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    public int deleteMember(String whereClause) {
+        try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
+            return userRepository.deleteMemberBySqlNative(connection, whereClause);
+        } catch (SQLException e) {
+            System.out.println("[deleteMember] 멤버 삭제 실패");
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
     public MemberService(MemberRepository userRepository) {
         this.userRepository = userRepository;
     }
