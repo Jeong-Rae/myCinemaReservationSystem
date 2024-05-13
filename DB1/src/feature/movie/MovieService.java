@@ -36,7 +36,7 @@ public class MovieService {
 		return response;
 	}
 	
-	public int updateTuple(String setClause) {
+	public int updateMovie(String setClause) {
 		try(Connection connection = DatabaseConfig.getConnectionAdmin()) {
 			return movieRepository.updateMovieBySqlNative(connection, setClause);
 		} catch (SQLException e) {
@@ -47,7 +47,7 @@ public class MovieService {
 		return 0;
 	}
 	
-	public int deleteTuple(String whereClause) {
+	public int deleteMovie(String whereClause) {
 		try(Connection connection = DatabaseConfig.getConnectionAdmin()) {
 			return movieRepository.deleteMovieBySqlNative(connection, whereClause);
 		} catch (SQLException e) {

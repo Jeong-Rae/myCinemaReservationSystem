@@ -35,39 +35,98 @@ public class AdminController {
 
     // SELECT
 
-    public List<Movie> getMovies() {
-        return movieService.findAllMovies();
-    }
-
-    public List<Screen> getScreens() {
-        return screenService.findAllScreens();
-    }
-
-    public List<ScreeningSchedule> getScreeningSchedules() {
-        return screeningScheduleService.findAllScreeningSchedules();
-    }
-
-    public List<Ticket> getTickets() {
-        return ticketService.findAllTickets();
-    }
-
-    public List<Seat> getSeats() {
-        return seatService.findAllSeats();
-    }
-
-    public List<Member> getMembers() {
+    public List<Member> getAllMembers() {
         return memberService.findAllMembers();
     }
 
-    public List<Reservation> getReservations() {
+    public List<Movie> getAllMovies() {
+        return movieService.findAllMovies();
+    }
+    
+    public List<Reservation> getAllReservations() {
         return reservationService.findAllReservations();
     }
 
+    public List<ScreeningSchedule> getAllScreeningSchedules() {
+        return screeningScheduleService.findAllScreeningSchedules();
+    }
+
+    public List<Screen> getAllScreens() {
+        return screenService.findAllScreens();
+    }
+
+    public List<Seat> getAllSeats() {
+        return seatService.findAllSeats();
+    }
+    
+    public List<Ticket> getAllTickets() {
+        return ticketService.findAllTickets();
+    }
+    
     // INSERT
+    
 
     // DELETE
+    public int deleteMembersByWhereClause(String whereClause) {
+    	return memberService.deleteMember(whereClause);
+    }
+    
+    public int deleteMoviesByWhereClause(String whereCluse) {
+		return movieService.deleteMovie(whereCluse);
+	}
+    
+    public int deleteReservationssByWhereClause(String whereClause) {
+    	return reservationService.deleteReservation(whereClause);
+    }
+    
+    public int deleteScreeningSchedulesByWhereClause(String whereCluse) {
+		return screeningScheduleService.deleteScreeningSchedule(whereCluse);
+	}
+    
+    public int deleteScreensByWhereClause(String whereClause) {
+    	return screenService.deleteScreen(whereClause);
+    }
+    
+    public int deleteSeatsByWhereClause(String whereCluse) {
+		return seatService.deleteSeat(whereCluse);
+	}
+    
+    public int deleteTicketsByWhereClause(String whereClause) {
+    	return ticketService.deleteTicket(whereClause);
+    }
+    
+    
 
     // UPDATE
+    public int updateMembersBySetClause(String setClause) {
+    	return memberService.updateMember(setClause);
+    }
+    
+    public int updateMoviesBySetClause(String setCluse) {
+		return movieService.updateMovie(setCluse);
+	}
+    
+    public int updateeReservationssByWhereClause(String setClause) {
+    	return reservationService.updateReservation(setClause);
+    }
+    
+    public int updateScreeningSchedulesByWhereClause(String setCluse) {
+		return screeningScheduleService.updateScreeningSchedule(setCluse);
+	}
+    
+    public int updateScreensByWhereClause(String setClause) {
+    	return screenService.updateScreen(setClause);
+    }
+    
+    public int updateSeatsByWhereClause(String setCluse) {
+		return seatService.updateSeat(setCluse);
+	}
+    
+    public int updateTicketsByWhereClause(String seteClause) {
+    	return ticketService.updateTicket(seteClause);
+    }
+    
+    
 
     public AdminController(
             MovieService movieService,
