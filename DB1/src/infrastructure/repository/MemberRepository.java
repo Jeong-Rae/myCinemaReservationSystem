@@ -26,6 +26,21 @@ public class MemberRepository {
 
         return response;
     }
+    
+    public Member findTopOrderByMemberId(Connection connection) {
+    	String sql = "SELECT * FROM USER ORDER BY member_id LIMIT 1";
+    	
+    	try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                return Member.RsToUser(rs);
+            }
+        } catch (SQLException e) {
+            System.out.println("[findTopOrderByMemberId] User 테이블 조회 실패");
+            e.printStackTrace();
+        }
+    	
+    	return null;
+    }
 
     public int updateMemberBySqlNative(Connection connection, String setClause) throws SQLException {
         String sql = "UPDATE USER ";
