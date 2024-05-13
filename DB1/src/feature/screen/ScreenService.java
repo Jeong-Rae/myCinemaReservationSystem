@@ -23,6 +23,26 @@ public class ScreenService {
         return response;
     }
 
+    public int updateScreen(String setClause) {
+        try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
+            return screenRepository.updateScreenBySqlNative(connection, setClause);
+        } catch (SQLException e) {
+            System.out.println("[updateScreen] 스크린 업데이트 실패");
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    public int deleteScreen(String whereClause) {
+        try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
+            return screenRepository.deleteScreenBySqlNative(connection, whereClause);
+        } catch (SQLException e) {
+            System.out.println("[deleteScreen] 스크린 삭제 실패");
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
     public ScreenService(ScreenRepository screenRepository) {
         this.screenRepository = screenRepository;
     }

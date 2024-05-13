@@ -49,6 +49,26 @@ public class TicketService {
     	return ticket;
     	
     }
+    
+    public int updateTicket(String setClause) {
+        try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
+            return ticketRepository.updateTicketBySqlNative(connection, setClause);
+        } catch (SQLException e) {
+            System.out.println("[updateTicke] 좌석 업데이트 실패");
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    public int deleteTicket(String whereClause) {
+        try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
+            return ticketRepository.deleteTicketBySqlNative(connection, whereClause);
+        } catch (SQLException e) {
+            System.out.println("[deleteTicket] 좌석 삭제 실패");
+            e.printStackTrace();
+            return 0;
+        }
+    }
 
     public TicketService(TicketRepository ticketRepository) {
         this.ticketRepository = ticketRepository;

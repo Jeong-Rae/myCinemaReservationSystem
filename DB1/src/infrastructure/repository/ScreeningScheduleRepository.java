@@ -1,9 +1,9 @@
 package infrastructure.repository;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,36 +14,55 @@ public class ScreeningScheduleRepository {
         String sql = "SELECT * FROM screening_schedule";
         List<ScreeningSchedule> response = new ArrayList<>();
 
-        try (PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
+        try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 ScreeningSchedule screeningSchedule = ScreeningSchedule.RsToScreeningSchedule(rs);
                 response.add(screeningSchedule);
             }
         } catch (SQLException e) {
-            System.out.println("ScreeningSchedule 테이블 조회 실패");
+            System.out.println("[findAllScreeningSchedules] ScreeningSchedule 테이블 조회 실패");
+            e.printStackTrace();
+        }
+
+        return response;
+    }
+
+    public List<ScreeningSchedule> findByMovie(Connection connection, Long movieId) {
+        String sql = "SELECT * FROM screening_schedule WHERE movie_id = " + movieId;
+        List<ScreeningSchedule> response = new ArrayList<>();
+
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                ScreeningSchedule screeningSchedule = ScreeningSchedule.RsToScreeningSchedule(rs);
+                response.add(screeningSchedule);
+            }
+        } catch (SQLException e) {
+            System.out.println("[findByMovie] ScreeningSchedule 테이블 조회 실패");
             e.printStackTrace();
         }
 
         return response;
     }
     
-    public List<ScreeningSchedule> findByMovie(Connection connection, Long movieId) {
-        String sql = "SELECT * FROM screening_schedule WHERE movie_id = " + movieId;
-        List<ScreeningSchedule> response = new ArrayList<>();
-
-        try (PreparedStatement pstmt = connection.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
-            while (rs.next()) {
-                ScreeningSchedule screeningSchedule = ScreeningSchedule.RsToScreeningSchedule(rs);
-                response.add(screeningSchedule);
-            }
-        } catch (SQLException e) {
-            System.out.println("ScreeningSchedule 테이블 조회 실패");
-            e.printStackTrace();
+    public int updateScreeningScheduleBySqlNative(Connection connection, String setClause) throws SQLException {
+        String sql = "UPDATE screening_schedule ";
+        if (setClause != null && !setClause.trim().isEmpty()) {
+            sql += setClause.trim();
         }
 
-        return response;
+        try (Statement stmt = connection.createStatement()) {
+            return stmt.executeUpdate(sql);
+        }
     }
 
-    public ScreeningScheduleRepository() {
+    public int deleteScreeningScheduleBySqlNative(Connection connection, String whereClause) throws SQLException {
+        String sql = "DELETE FROM screening_schedule ";
+        if (whereClause != null && !whereClause.trim().isEmpty()) {
+            sql += whereClause.trim();
+        }
+
+        try (Statement stmt = connection.createStatement()) {
+            return stmt.executeUpdate(sql);
+        }
     }
 }

@@ -57,6 +57,26 @@ public class SeatService {
     	return seat;
     	
     }
+    
+    public int updateSeat(String setClause) {
+        try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
+            return seatRepository.updateSeatBySqlNative(connection, setClause);
+        } catch (SQLException e) {
+            System.out.println("[updateSeat] 좌석 업데이트 실패");
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    public int deleteSeat(String whereClause) {
+        try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
+            return seatRepository.deleteSeatBySqlNative(connection, whereClause);
+        } catch (SQLException e) {
+            System.out.println("[deleteSeat] 좌석 삭제 실패");
+            e.printStackTrace();
+            return 0;
+        }
+    }
 
     public SeatService(SeatRepository seatRepository) {
         this.seatRepository = seatRepository;

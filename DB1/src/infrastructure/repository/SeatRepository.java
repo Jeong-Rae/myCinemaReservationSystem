@@ -11,11 +11,11 @@ import java.util.List;
 import core.domain.seat.Seat;
 
 public class SeatRepository {
-    public List<Seat> findAllSeats(Connection conn) {
+	public List<Seat> findAllSeats(Connection conn) {
         String sql = "SELECT * FROM seat";
         List<Seat> response = new ArrayList<>();
 
-        try (PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
+        try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 Seat seat = Seat.RsToSeat(rs);
                 response.add(seat);
@@ -79,6 +79,28 @@ public class SeatRepository {
         }
         
         return seatId;
+    }
+    
+    public int updateSeatBySqlNative(Connection connection, String setClause) throws SQLException {
+        String sql = "UPDATE seat ";
+        if (setClause != null && !setClause.trim().isEmpty()) {
+            sql += setClause.trim();
+        }
+
+        try (Statement stmt = connection.createStatement()) {
+            return stmt.executeUpdate(sql);
+        }
+    }
+
+    public int deleteSeatBySqlNative(Connection connection, String whereClause) throws SQLException {
+        String sql = "DELETE FROM seat ";
+        if (whereClause != null && !whereClause.trim().isEmpty()) {
+            sql += whereClause.trim();
+        }
+
+        try (Statement stmt = connection.createStatement()) {
+            return stmt.executeUpdate(sql);
+        }
     }
 
     public SeatRepository() {

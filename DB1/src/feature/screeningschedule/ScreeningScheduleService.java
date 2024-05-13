@@ -10,31 +10,51 @@ import infrastructure.config.DatabaseConfig;
 import infrastructure.repository.ScreeningScheduleRepository;
 
 public class ScreeningScheduleService {
-	private final ScreeningScheduleRepository screeningScheduleRepository;
+    private final ScreeningScheduleRepository screeningScheduleRepository;
 
-	public List<ScreeningSchedule> findAllScreeningSchedules() {
-		List<ScreeningSchedule> response = new ArrayList<>();
-		try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
-			response = screeningScheduleRepository.findAllScreeningSchedules(connection);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+    public List<ScreeningSchedule> findAllScreeningSchedules() {
+        List<ScreeningSchedule> response = new ArrayList<>();
+        try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
+            response = screeningScheduleRepository.findAllScreeningSchedules(connection);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
-		return response;
-	}
-	
-	public List<ScreeningSchedule> findScreeningSchedulesByMovieId(Long movieId) {
-		List<ScreeningSchedule> response = new ArrayList<>();
-		try (Connection connection = DatabaseConfig.getConnectionUser()) {
-			response = screeningScheduleRepository.findByMovie(connection, movieId);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+        return response;
+    }
 
-		return response;
-	}
+    public List<ScreeningSchedule> findScreeningSchedulesByMovieId(Long movieId) {
+        List<ScreeningSchedule> response = new ArrayList<>();
+        try (Connection connection = DatabaseConfig.getConnectionUser()) {
+            response = screeningScheduleRepository.findByMovie(connection, movieId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
-	public ScreeningScheduleService(ScreeningScheduleRepository screeningScheduleRepository) {
-		this.screeningScheduleRepository = screeningScheduleRepository;
-	}
+        return response;
+    }
+    
+    public int updateScreeningSchedule(String setClause) {
+        try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
+            return screeningScheduleRepository.updateScreeningScheduleBySqlNative(connection, setClause);
+        } catch (SQLException e) {
+            System.out.println("[updateScreeningSchedule] 상영 스케줄 업데이트 실패");
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    public int deleteScreeningSchedule(String whereClause) {
+        try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
+            return screeningScheduleRepository.deleteScreeningScheduleBySqlNative(connection, whereClause);
+        } catch (SQLException e) {
+            System.out.println("[deleteScreeningSchedule] 상영 스케줄 삭제 실패");
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    public ScreeningScheduleService(ScreeningScheduleRepository screeningScheduleRepository) {
+        this.screeningScheduleRepository = screeningScheduleRepository;
+    }
 }
