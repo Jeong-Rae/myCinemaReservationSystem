@@ -1,4 +1,7 @@
+import java.awt.Container;
 import java.util.List;
+
+import javax.swing.JFrame;
 
 import core.domain.movie.Movie;
 import core.domain.reservation.PaymentMethodType;
@@ -9,6 +12,8 @@ import feature.admin.AdminController;
 import feature.auth.AuthController;
 import feature.auth.AuthService;
 import feature.member.MemberService;
+import feature.movie.MovieSearchView;
+import feature.movie.MovieSearchViewModel;
 import feature.movie.MovieService;
 import feature.movie.SearchCriteria;
 import feature.reservation.ReservationRequest;
@@ -27,10 +32,15 @@ import infrastructure.repository.ScreenRepository;
 import infrastructure.repository.ScreeningScheduleRepository;
 import infrastructure.repository.SeatRepository;
 import infrastructure.repository.TicketRepository;
+import infrastructure.repository.db2.*;
 
-public class Application {
-
-    public static void main(String[] args) {
+class DIContainer {
+	MovieSearchViewModel movieSearchViewDependcies;
+	
+	DIContainer() {
+//    	DatabaseInitializer dbinitializer = new DatabaseInitializer();
+//    	dbinitializer.initializeDatabase();
+    	
         MovieRepository movieRepository = new MovieRepository();
         MovieService movieService = new MovieService(movieRepository);
 
@@ -79,7 +89,7 @@ public class Application {
         AuthService authService = new AuthService(memberRepository);
         AuthController authController = new AuthController(authService); 
         
-        authController.login("admin", "1234");
+        authController.login("root", "1234");
 
         // 필터조회
         List<Movie> movies = userController.searchMovies(new SearchCriteria("기생충", null, null, null));
@@ -113,7 +123,34 @@ public class Application {
         ReservationResponse reservationResponse = userController.createReservation(reservationRequest);
         System.out.println(reservationResponse);
         
-        
+        this.movieSearchViewDependcies = new MovieSearchViewModel(movieService);
+	}
+}
+
+class RootFrame extends JFrame {
+	MovieSearchView movieSearchView;
+	
+	RootFrame(DIContainer diContainer) {
+		this.setTitle("영화관 예약 시스템");
+		this.setSize(1920, 1080);
+		Container contentPane = this.getContentPane();
+		
+		this.movieSearchView = new MovieSearchView(diContainer.movieSearchViewDependcies);
+		contentPane.add(this.movieSearchView);
+//		this.add(this.movieSearchView);
+		
+		this.setVisible(true);
+		this.setDefaultCloseOperation(this.EXIT_ON_CLOSE);
+	}
+}
+
+public class Application {
+    public static void main(String[] args) {
+    	DIContainer diContainer = new DIContainer();
+    	
+    	MovieSearchView movieSearchView = new MovieSearchView(diContainer.movieSearchViewDependcies);
+    	
+//    	RootFrame rootFrame = new RootFrame(diContainer);
     }
 
 }
