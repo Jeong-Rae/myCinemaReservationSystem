@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
+
 import core.domain.movie.Movie;
 
 public class MovieSearchViewModel {
@@ -19,44 +21,74 @@ public class MovieSearchViewModel {
 		this.movies = this.movieUseCase.findAllMovies();
 	}
 	
-	public void titleTextFieldKeyTyped(JTextField textField) {
+	public void titleTextFieldKeyReleased(JTextField textField) {
 		this.title = textField.getText();
-		title = title == "" ? null : title;
+		System.out.println(this.title);
+		this.title = this.title.isBlank() ? null : title;
 		this.updateMoviesByCriteria();
 	}
 	
-	public void directorTextFieldKeyTyped(JTextField textField) {
+	public void directorTextFieldKeyReleased(JTextField textField) {
 		this.director = textField.getText();
-		director = director == "" ? null : director;
+		director = director.isBlank() ? null : director;
 		this.updateMoviesByCriteria();
 	}
 	
-	public void actorTextFieldKeyTyped(JTextField textField) {
+	public void actorTextFieldKeyReleased(JTextField textField) {
 		this.actor = textField.getText();
-		actor = actor == "" ? null : actor;
+		actor = actor.isBlank() ? null : actor;
 		this.updateMoviesByCriteria();
 	}
 	
-	public void genreTextFieldKeyTyped(JTextField textField) {
+	public void genreTextFieldKeyReleased(JTextField textField) {
 		this.genre = textField.getText();
-		genre = genre == "" ? null : genre;
+		genre = genre.isBlank() ? null : genre;
 		this.updateMoviesByCriteria();
 	}
 	
-	public Object[] moviesToString() {
-		System.out.println(this.movies);
-		return this.movies
-				.stream()
-				.map(movie -> movie.toString())
-				.toArray();
+	public DefaultTableModel moviesToTableModel() {
+		String[] columns = {
+				"제목", 
+				"상영시간",
+				"등급",
+				"감독",
+				"배우",
+				"설명",
+				"개봉일자",
+				"평점"
+		};
+		
+		DefaultTableModel tableModel = new DefaultTableModel(columns, 0) {
+			@Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // 모든 셀을 편집 불가능하게 설정
+            }
+		};
+		
+		this.movies.forEach(movie -> 
+			tableModel.addRow(new Object[] {
+						movie.getTitle(), 
+						movie.getDuration(),
+						movie.getRating().getDescription(),
+						movie.getDirector(),
+						movie.getActor(),
+						movie.getGenre(),
+						movie.getDescription(),
+						movie.getReleaseDate().toString(),
+						String.valueOf(movie.getScore())
+				})
+		);
+		
+		return tableModel;
 	}
 	
 	private void updateMoviesByCriteria() {
+		System.out.println(this.title + ", " + this.director + ", "  + this.actor + ", "  + this.genre);
 		this.movies = this.movieUseCase.findMovieByCriteria(
-				new SearchCriteria(
-						this.title, 
-						this.director, 
-						this.actor, 
-						this.genre));
+		new SearchCriteria(
+				this.title, 
+				this.director, 
+				this.actor, 
+				this.genre));
 	}
 }
