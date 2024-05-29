@@ -53,9 +53,10 @@ public class MovieSearchViewModel {
 				"등급",
 				"감독",
 				"배우",
-				"설명",
+				"장르",
 				"개봉일자",
-				"평점"
+				"평점",
+				"설명"
 		};
 		
 		DefaultTableModel tableModel = new DefaultTableModel(columns, 0) {
@@ -73,9 +74,9 @@ public class MovieSearchViewModel {
 						movie.getDirector(),
 						movie.getActor(),
 						movie.getGenre(),
-						movie.getDescription(),
 						movie.getReleaseDate().toString(),
-						String.valueOf(movie.getScore())
+						String.valueOf(movie.getScore()),
+						movie.getDescription()
 				})
 		);
 		
