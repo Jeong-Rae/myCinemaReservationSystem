@@ -1,15 +1,13 @@
 package feature.movie;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import core.domain.movie.Movie;
 
 public class MovieSearchViewModel {
 	private final MovieService movieUseCase;
+	public MovieSearchViewModelDelegate delegate;
 	public List<Movie> movies;
 	public String title = null;
 	public String director = null;
@@ -21,29 +19,33 @@ public class MovieSearchViewModel {
 		this.movies = this.movieUseCase.findAllMovies();
 	}
 	
-	public void titleTextFieldKeyReleased(JTextField textField) {
-		this.title = textField.getText();
+	public void titleTextFieldKeyReleased(String title) {
+		this.title = title;
 		System.out.println(this.title);
 		this.title = this.title.isBlank() ? null : title;
 		this.updateMoviesByCriteria();
 	}
 	
-	public void directorTextFieldKeyReleased(JTextField textField) {
-		this.director = textField.getText();
+	public void directorTextFieldKeyReleased(String director) {
+		this.director = director;
 		director = director.isBlank() ? null : director;
 		this.updateMoviesByCriteria();
 	}
 	
-	public void actorTextFieldKeyReleased(JTextField textField) {
-		this.actor = textField.getText();
+	public void actorTextFieldKeyReleased(String actor) {
+		this.actor = actor;
 		actor = actor.isBlank() ? null : actor;
 		this.updateMoviesByCriteria();
 	}
 	
-	public void genreTextFieldKeyReleased(JTextField textField) {
-		this.genre = textField.getText();
+	public void genreTextFieldKeyReleased(String genre) {
+		this.genre = genre;
 		genre = genre.isBlank() ? null : genre;
 		this.updateMoviesByCriteria();
+	}
+	
+	public void movieTableCellTapped(Movie movie) {
+		delegate.movieTableCellTapped(movie);
 	}
 	
 	public DefaultTableModel moviesToTableModel() {

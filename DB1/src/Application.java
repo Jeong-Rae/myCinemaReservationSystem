@@ -14,6 +14,7 @@ import feature.auth.AuthService;
 import feature.member.MemberService;
 import feature.movie.MovieSearchView;
 import feature.movie.MovieSearchViewModel;
+import feature.movie.MovieSearchViewModelDelegate;
 import feature.movie.MovieService;
 import feature.movie.SearchCriteria;
 import feature.reservation.ReservationRequest;
@@ -127,6 +128,25 @@ class DIContainer {
 	}
 }
 
+class FrameCoordinator implements MovieSearchViewModelDelegate {
+	MovieSearchView movieSearchView;
+	
+	FrameCoordinator(DIContainer diContainer) {
+		MovieSearchViewModel movieSearchViewModel = diContainer.movieSearchViewDependcies;
+		movieSearchViewModel.delegate = this;
+		new MovieSearchView(movieSearchViewModel);
+	}
+
+	@Override
+	public void movieTableCellTapped(Movie movie) {
+		// TODO Auto-generated method stub
+		JFrame frame = new JFrame();
+		frame.setSize(500, 500);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frame.setVisible(true);
+	}
+}
+
 class RootFrame extends JFrame {
 	MovieSearchView movieSearchView;
 	
@@ -148,7 +168,7 @@ public class Application {
     public static void main(String[] args) {
     	DIContainer diContainer = new DIContainer();
     	
-    	MovieSearchView movieSearchView = new MovieSearchView(diContainer.movieSearchViewDependcies);
+    	FrameCoordinator coordinator = new FrameCoordinator(diContainer);
     	
 //    	RootFrame rootFrame = new RootFrame(diContainer);
     }

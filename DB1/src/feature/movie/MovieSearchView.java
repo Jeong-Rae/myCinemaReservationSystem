@@ -131,7 +131,7 @@ class MovieSearchTextFields extends JPanel {
 
 			@Override
 			public void keyReleased(KeyEvent e) { 
-				viewModel.titleTextFieldKeyReleased(title.textField);
+				viewModel.titleTextFieldKeyReleased(title.textField.getText());
 				table.setModel(viewModel.moviesToTableModel());
 				revalidate();
 				repaint();
@@ -146,7 +146,7 @@ class MovieSearchTextFields extends JPanel {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				viewModel.directorTextFieldKeyReleased(director.textField);
+				viewModel.directorTextFieldKeyReleased(director.textField.getText());
 				table.setModel(viewModel.moviesToTableModel());
 				revalidate();
 				repaint();
@@ -161,7 +161,7 @@ class MovieSearchTextFields extends JPanel {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				viewModel.actorTextFieldKeyReleased(actor.textField);
+				viewModel.actorTextFieldKeyReleased(actor.textField.getText());
 				table.setModel(viewModel.moviesToTableModel());
 				revalidate();
 				repaint();
@@ -176,7 +176,7 @@ class MovieSearchTextFields extends JPanel {
 
 			@Override
 			public void keyReleased(KeyEvent e) { 
-				viewModel.genreTextFieldKeyReleased(genre.textField);
+				viewModel.genreTextFieldKeyReleased(genre.textField.getText());
 				table.setModel(viewModel.moviesToTableModel());
 				revalidate();
 				repaint();
@@ -212,6 +212,7 @@ public class MovieSearchView extends JFrame implements ListSelectionListener {
 		this.setLayout(new BorderLayout());
 		
 		this.table = new MovieTable(viewModel.moviesToTableModel());
+		this.table.getSelectionModel().addListSelectionListener(this);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(this.table);
@@ -226,7 +227,8 @@ public class MovieSearchView extends JFrame implements ListSelectionListener {
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		if(!e.getValueIsAdjusting()) {
-			System.out.println("selected :" + table.getSelectedRow());
+			System.out.println("selected :" + this.viewModel.movies.get(table.getSelectedRow()));
+			viewModel.movieTableCellTapped(this.viewModel.movies.get(table.getSelectedRow()));
 		}
 	}
 }
