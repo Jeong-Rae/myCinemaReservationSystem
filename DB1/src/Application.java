@@ -21,13 +21,12 @@ import feature.reservation.ReservationRequest;
 import feature.reservation.ReservationResponse;
 import feature.reservation.ReservationService;
 import feature.screen.ScreenService;
-import feature.screeningschedule.ScheduleListView;
-import feature.screeningschedule.ScheduleListViewModel;
+import feature.screen.ScreenView;
+import feature.screen.ScreenViewModel;
+import feature.screen.ScreenViewModelDelegate;
 import feature.screeningschedule.ScreeningScheduleService;
 import feature.seat.SeatRequest;
 import feature.seat.SeatService;
-import feature.seat.SeatView;
-import feature.seat.SeatViewModel;
 import feature.ticket.TicketService;
 import feature.user.UserController;
 import infrastructure.repository.MemberRepository;
@@ -40,7 +39,9 @@ import infrastructure.repository.TicketRepository;
 import infrastructure.repository.db2.*;
 
 class DIContainer {
+	UserController userController;
 	MovieSearchViewModel movieSearchViewDependcies;
+	private ScreenViewModel screenViewDependencies;
 	
 	DIContainer() {
 //    	DatabaseInitializer dbinitializer = new DatabaseInitializer();
@@ -79,7 +80,7 @@ class DIContainer {
         );
         
         // 사용자 컨트롤러
-        UserController userController = new UserController(
+        this.userController = new UserController(
                 movieService,
                 screenService,
                 screeningScheduleService,
@@ -131,26 +132,16 @@ class DIContainer {
         this.movieSearchViewDependcies = new MovieSearchViewModel(movieService);
 	}
 	
-	public ScheduleListViewModel schedultListViewDependencies(Movie movie) {
-		ScreeningScheduleRepository screeningScheduleRepository = new ScreeningScheduleRepository();
-        ScreeningScheduleService screeningScheduleService = new ScreeningScheduleService(screeningScheduleRepository);
-        
-		return new ScheduleListViewModel(movie, screeningScheduleService);
-	}
-	
-	public SeatViewModel seatViewDependencies(Movie movie, ScheduleListViewModel scheduleListViewModel) {
-		SeatRepository seatRepository = new SeatRepository();
-        SeatService seatService = new SeatService(seatRepository);
-        
-        return new SeatViewModel(movie, scheduleListViewModel, seatService);
+	public ScreenViewModel screenViewDependencies(Movie movie) {
+		this.screenViewDependencies = new ScreenViewModel(movie, this.userController);
+		
+		return this.screenViewDependencies;
 	}
 }
 
-class FrameCoordinator implements MovieSearchViewModelDelegate {
+class FrameCoordinator implements MovieSearchViewModelDelegate, ScreenViewModelDelegate {
 	DIContainer diContainer;
-	MovieSearchView movieSearchView;
-	ScheduleListView scheduleListView;
-	SeatView seatView;
+	ScreenView screenView;
 	
 	FrameCoordinator(DIContainer diContainer) {
 		this.diContainer = diContainer;
@@ -162,28 +153,15 @@ class FrameCoordinator implements MovieSearchViewModelDelegate {
 	@Override
 	public void movieTableCellTapped(Movie movie) {
 		// TODO Auto-generated method stub
-		ScheduleListViewModel scheduleListViewModel = this.diContainer.schedultListViewDependencies(movie);
-		SeatViewModel seatViewModel = this.diContainer.seatViewDependencies(movie, scheduleListViewModel);
-		this.scheduleListView = new ScheduleListView(scheduleListViewModel);
-		
-		this.seatView = new SeatView(this.scheduleListView, seatViewModel);
+		ScreenViewModel viewModel = this.diContainer.screenViewDependencies(movie);
+		viewModel.delegate = this;
+		this.screenView = new ScreenView(viewModel);
 	}
-}
 
-class RootFrame extends JFrame {
-	MovieSearchView movieSearchView;
-	
-	RootFrame(DIContainer diContainer) {
-		this.setTitle("영화관 예약 시스템");
-		this.setSize(1920, 1080);
-		Container contentPane = this.getContentPane();
-		
-		this.movieSearchView = new MovieSearchView(diContainer.movieSearchViewDependcies);
-		contentPane.add(this.movieSearchView);
-//		this.add(this.movieSearchView);
-		
-		this.setVisible(true);
-		this.setDefaultCloseOperation(this.EXIT_ON_CLOSE);
+	@Override
+	public void reservationButtonReleased() {
+		// TODO Auto-generated method stub
+		this.screenView.dispose();
 	}
 }
 
@@ -192,8 +170,5 @@ public class Application {
     	DIContainer diContainer = new DIContainer();
     	
     	FrameCoordinator coordinator = new FrameCoordinator(diContainer);
-    	
-//    	RootFrame rootFrame = new RootFrame(diContainer);
     }
-
 }
