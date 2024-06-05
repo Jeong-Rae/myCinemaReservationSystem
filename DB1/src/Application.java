@@ -21,9 +21,13 @@ import feature.reservation.ReservationRequest;
 import feature.reservation.ReservationResponse;
 import feature.reservation.ReservationService;
 import feature.screen.ScreenService;
+import feature.screeningschedule.ScheduleListView;
+import feature.screeningschedule.ScheduleListViewModel;
 import feature.screeningschedule.ScreeningScheduleService;
 import feature.seat.SeatRequest;
 import feature.seat.SeatService;
+import feature.seat.SeatView;
+import feature.seat.SeatViewModel;
 import feature.ticket.TicketService;
 import feature.user.UserController;
 import infrastructure.repository.MemberRepository;
@@ -126,13 +130,31 @@ class DIContainer {
         
         this.movieSearchViewDependcies = new MovieSearchViewModel(movieService);
 	}
+	
+	public ScheduleListViewModel schedultListViewDependencies(Movie movie) {
+		ScreeningScheduleRepository screeningScheduleRepository = new ScreeningScheduleRepository();
+        ScreeningScheduleService screeningScheduleService = new ScreeningScheduleService(screeningScheduleRepository);
+        
+		return new ScheduleListViewModel(movie, screeningScheduleService);
+	}
+	
+	public SeatViewModel seatViewDependencies(Movie movie, ScheduleListViewModel scheduleListViewModel) {
+		SeatRepository seatRepository = new SeatRepository();
+        SeatService seatService = new SeatService(seatRepository);
+        
+        return new SeatViewModel(movie, scheduleListViewModel, seatService);
+	}
 }
 
 class FrameCoordinator implements MovieSearchViewModelDelegate {
+	DIContainer diContainer;
 	MovieSearchView movieSearchView;
+	ScheduleListView scheduleListView;
+	SeatView seatView;
 	
 	FrameCoordinator(DIContainer diContainer) {
-		MovieSearchViewModel movieSearchViewModel = diContainer.movieSearchViewDependcies;
+		this.diContainer = diContainer;
+		MovieSearchViewModel movieSearchViewModel = this.diContainer.movieSearchViewDependcies;
 		movieSearchViewModel.delegate = this;
 		new MovieSearchView(movieSearchViewModel);
 	}
@@ -140,10 +162,11 @@ class FrameCoordinator implements MovieSearchViewModelDelegate {
 	@Override
 	public void movieTableCellTapped(Movie movie) {
 		// TODO Auto-generated method stub
-		JFrame frame = new JFrame();
-		frame.setSize(500, 500);
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frame.setVisible(true);
+		ScheduleListViewModel scheduleListViewModel = this.diContainer.schedultListViewDependencies(movie);
+		SeatViewModel seatViewModel = this.diContainer.seatViewDependencies(movie, scheduleListViewModel);
+		this.scheduleListView = new ScheduleListView(scheduleListViewModel);
+		
+		this.seatView = new SeatView(this.scheduleListView, seatViewModel);
 	}
 }
 
