@@ -5,6 +5,7 @@ import java.util.List;
 
 import core.domain.movie.Movie;
 import core.domain.reservation.Reservation;
+import core.domain.screen.Screen;
 import core.domain.screeningschedule.ScreeningSchedule;
 import core.domain.seat.Seat;
 import core.domain.ticket.Ticket;
@@ -47,6 +48,12 @@ public class UserController {
 		return seatService.findUnavailableSeats(screeningScheduleId);
 	}
 
+    // screenId 기반 스크린 조회
+    // 없으면 NULL 반환됨.
+    public Screen getScreenById(Long screenId) {
+    	return screenService.findByScreenId(screenId);
+    }
+    
     // INSERT
     
     // 예약 생성
@@ -70,6 +77,29 @@ public class UserController {
     	
     	return response;
     }
+    
+    // 본인이 예약한 정보 조회
+    
+    /*
+     SELECT 
+	    M.title AS Movie_Title,
+	    SS.start_date AS Start_Date,
+	    SS.start_time AS Start_Time,
+	    S.name AS Screen_Name,
+	    ST.row_number AS `Row_Number`,
+	    ST.col_number AS Col_Number,
+	    R.amount AS Amount
+	FROM 
+	    reservation R
+	    INNER JOIN ticket T ON R.reservation_id = T.reservation_id
+	    INNER JOIN screening_schedule SS ON T.screening_schedule_id = SS.schedule_id
+	    INNER JOIN movie M ON SS.movie_id = M.movie_id
+	    INNER JOIN screen S ON T.screen_id = S.screen_id
+	    INNER JOIN seat ST ON T.seat_id = ST.seat_id
+	WHERE 
+	    1=1 OR R.reservation_id = 1
+     */
+    
 
     // DELETE
 

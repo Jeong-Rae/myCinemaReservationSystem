@@ -22,6 +22,19 @@ public class ScreenService {
 
         return response;
     }
+    
+    public Screen findByScreenId(Long screenId) {
+        try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
+            List<Screen> result = screenRepository.findByScreenId(connection, screenId);
+            if (result.size() == 1) {
+            	return result.get(0);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return null;
+    }
 
     public int updateScreen(String setClause) {
         try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
