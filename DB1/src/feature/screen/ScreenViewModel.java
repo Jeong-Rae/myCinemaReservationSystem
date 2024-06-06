@@ -8,6 +8,8 @@ import core.domain.reservation.PaymentMethodType;
 import core.domain.screen.Screen;
 import core.domain.screeningschedule.ScreeningSchedule;
 import core.domain.seat.Seat;
+import core.domain.ticket.TicketRequest;
+import feature.reservation.ReservationRequest;
 import feature.seat.SeatRequest;
 import feature.user.UserController;
 
@@ -21,7 +23,7 @@ public class ScreenViewModel {
 	private List<Seat> unvailableSeats;
 	public int totalPrice = 0;
 	public ScreeningSchedule schedule;
-	public Screen screen = new Screen("test", true, 10, 10);
+	public Screen screen;
 	private PaymentMethodType paymentMethod;
 	
 	public ScreenViewModel(Movie movie, UserController userController) {
@@ -33,6 +35,7 @@ public class ScreenViewModel {
 	
 	public void scheduleListCellTapped(ScreeningSchedule schedule) {
 		this.schedule = schedule;
+		this.screen = userController.getScreenById(this.schedule.getScreenId());
 		this.unvailableSeats = this.userController.getUnavailableSeats(this.schedule.getScheduleId());
 		this.selectedSeats = new ArrayList<>();
 	}
@@ -42,6 +45,7 @@ public class ScreenViewModel {
 			SeatRequest seat = new SeatRequest(colNumber, rowNumber, this.schedule.getScheduleId(), this.schedule.getScreenId());
 			this.selectedSeats.add(seat);
 		}
+		this.totalPrice = this.selectedSeats.size() * 12000;
 		
 		System.out.println("clicked: " + this.selectedSeats);
 	}
@@ -71,6 +75,9 @@ public class ScreenViewModel {
 	}
 	
 	public void reservationButtonReleased() {
+		List<TicketRequest> ticketRequests = (List<TicketRequest>) this.selectedSeats.stream().map(seat -> new TicketRequest(12000, 12000, seat));
+		ReservationRequest reservation = new ReservationRequest(ticketRequests, this.paymentMethod, this.userController.getMemberId());
+		this.userController.createReservation(reservation);
 		this.delegate.reservationButtonReleased();
 	}
 }

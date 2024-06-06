@@ -78,6 +78,10 @@ public class UserController {
     	return response;
     }
     
+    public long getMemberId() {
+    	return this.memberService.findAllMembers().get(0).getMemberId();
+    }
+    
     // 본인이 예약한 정보 조회
     
     /*
