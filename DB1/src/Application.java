@@ -9,6 +9,8 @@ import core.domain.screeningschedule.ScreeningSchedule;
 import core.domain.seat.Seat;
 import core.domain.ticket.TicketRequest;
 import feature.admin.AdminController;
+import feature.admin.AdminView;
+import feature.admin.AdminViewModel;
 import feature.auth.AuthController;
 import feature.auth.AuthService;
 import feature.auth.AuthView;
@@ -46,6 +48,7 @@ class DIContainer {
 	MovieSearchViewModel movieSearchViewDependcies;
 	AuthViewModel authViewDependencies;
 	private ScreenViewModel screenViewDependencies;
+	AdminViewModel adimViewDependencies;
 	
 	DIContainer() {
 //    	DatabaseInitializer dbinitializer = new DatabaseInitializer();
@@ -135,6 +138,7 @@ class DIContainer {
         
         this.authViewDependencies = new AuthViewModel(authController);
         this.movieSearchViewDependcies = new MovieSearchViewModel(movieService);
+        this.adimViewDependencies = new AdminViewModel(adminController);
 	}
 	
 	public ScreenViewModel screenViewDependencies(Movie movie) {
@@ -149,6 +153,7 @@ class FrameCoordinator implements MovieSearchViewModelDelegate, ScreenViewModelD
 	AuthView authView;
 	MovieSearchView movieSearchView;
 	ScreenView screenView;
+	AdminView adminView;
 	
 	FrameCoordinator(DIContainer diContainer) {
 		this.diContainer = diContainer;
@@ -174,10 +179,8 @@ class FrameCoordinator implements MovieSearchViewModelDelegate, ScreenViewModelD
 	@Override
 	public void managerLoginCompleted() {
 		// TODO Auto-generated method stub
-		JFrame emptyFrame = new JFrame();
-		emptyFrame.setSize(500, 500);
-		emptyFrame.setVisible(true);
-		emptyFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		AdminViewModel viewModel = this.diContainer.adimViewDependencies;
+		this.adminView = new AdminView(viewModel);
 		this.authView.dispose();
 	}
 
