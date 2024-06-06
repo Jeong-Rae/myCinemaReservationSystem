@@ -11,7 +11,7 @@ import core.domain.member.Member;
 
 public class MemberRepository {
     public List<Member> findAllUsers(Connection conn) {
-        String sql = "SELECT * FROM USER";
+        String sql = "SELECT * FROM MEMBER";
         List<Member> response = new ArrayList<>();
 
         try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
@@ -28,7 +28,7 @@ public class MemberRepository {
     }
     
     public Member findTopOrderByMemberId(Connection connection) {
-    	String sql = "SELECT * FROM USER ORDER BY member_id LIMIT 1";
+    	String sql = "SELECT * FROM MEMBER ORDER BY member_id LIMIT 1";
     	
     	try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
@@ -43,7 +43,7 @@ public class MemberRepository {
     }
 
     public int updateMemberBySqlNative(Connection connection, String setClause) throws SQLException {
-        String sql = "UPDATE USER ";
+        String sql = "UPDATE MEMBER ";
         if (setClause != null && !setClause.trim().isEmpty()) {
             sql += setClause.trim();
         }
@@ -54,7 +54,7 @@ public class MemberRepository {
     }
 
     public int deleteMemberBySqlNative(Connection connection, String whereClause) throws SQLException {
-        String sql = "DELETE FROM USER ";
+        String sql = "DELETE FROM MEMBER ";
         if (whereClause != null && !whereClause.trim().isEmpty()) {
             sql += whereClause.trim();
         }

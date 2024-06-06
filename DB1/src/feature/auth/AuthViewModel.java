@@ -2,36 +2,55 @@ package feature.auth;
 
 public class AuthViewModel {
 	private final AuthController authController;
+	public AuthViewModelDelegate delegate;
+	private String id = "";
+	private String password = "";
 	
 	public AuthViewModel(AuthController authController) {
 		this.authController = authController;
 	}
 	
-	public boolean managerLoginButtonClicked(String id, String password) {
+	public boolean managerLoginButtonClicked() {
 		if (id == "user1") {
 			return false;
 		}
 		
 		try {
-			this.authController.login(id, password);
-		} catch (IllegalArgumentException ex) {
+			if(this.authController.login(this.id, this.password) == null) {
+				return false;
+			}
+		} catch (Throwable ex) {
 			return false;
 		}
+		
+		this.delegate.managerLoginCompleted();
 		
 		return true;
 	}
 	
-	public boolean userLoginButtonClicked(String id, String password) {
+	public boolean userLoginButtonClicked() {
 		if (id == "root") {
 			return false;
 		}
 		
 		try {
-			this.authController.login(id, password);
-		} catch (IllegalArgumentException ex) {
+			if(this.authController.login(this.id, this.password) == null) {
+				return false;
+			}
+		} catch (Throwable ex) {
 			return false;
 		}
 		
+		this.delegate.userLoginCompleted();
+		
 		return true;
+	}
+	
+	public void idFieldReleased(String text) {
+		this.id = text;
+	}
+	
+	public void passwordFieldReleased(String text) {
+		this.password = text;
 	}
 }

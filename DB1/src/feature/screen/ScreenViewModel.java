@@ -75,7 +75,7 @@ public class ScreenViewModel {
 	}
 	
 	public void reservationButtonReleased() {
-		List<TicketRequest> ticketRequests = (List<TicketRequest>) this.selectedSeats.stream().map(seat -> new TicketRequest(12000, 12000, seat));
+		List<TicketRequest> ticketRequests = this.selectedSeats.stream().map(seat -> new TicketRequest(12000, 12000, seat)).toList();
 		ReservationRequest reservation = new ReservationRequest(ticketRequests, this.paymentMethod, this.userController.getMemberId());
 		this.userController.createReservation(reservation);
 		this.delegate.reservationButtonReleased();

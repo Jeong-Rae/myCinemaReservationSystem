@@ -11,6 +11,9 @@ import core.domain.ticket.TicketRequest;
 import feature.admin.AdminController;
 import feature.auth.AuthController;
 import feature.auth.AuthService;
+import feature.auth.AuthView;
+import feature.auth.AuthViewModel;
+import feature.auth.AuthViewModelDelegate;
 import feature.member.MemberService;
 import feature.movie.MovieSearchView;
 import feature.movie.MovieSearchViewModel;
@@ -41,6 +44,7 @@ import infrastructure.repository.db2.*;
 class DIContainer {
 	UserController userController;
 	MovieSearchViewModel movieSearchViewDependcies;
+	AuthViewModel authViewDependencies;
 	private ScreenViewModel screenViewDependencies;
 	
 	DIContainer() {
@@ -95,7 +99,7 @@ class DIContainer {
         AuthService authService = new AuthService(memberRepository);
         AuthController authController = new AuthController(authService); 
         
-        authController.login("root", "1234");
+//        authController.login("root", "1234");
 
         // 필터조회
         List<Movie> movies = userController.searchMovies(new SearchCriteria("기생충", null, null, null));
@@ -129,6 +133,7 @@ class DIContainer {
         ReservationResponse reservationResponse = userController.createReservation(reservationRequest);
         System.out.println(reservationResponse);
         
+        this.authViewDependencies = new AuthViewModel(authController);
         this.movieSearchViewDependcies = new MovieSearchViewModel(movieService);
 	}
 	
@@ -139,15 +144,17 @@ class DIContainer {
 	}
 }
 
-class FrameCoordinator implements MovieSearchViewModelDelegate, ScreenViewModelDelegate {
+class FrameCoordinator implements MovieSearchViewModelDelegate, ScreenViewModelDelegate, AuthViewModelDelegate {
 	DIContainer diContainer;
+	AuthView authView;
+	MovieSearchView movieSearchView;
 	ScreenView screenView;
 	
 	FrameCoordinator(DIContainer diContainer) {
 		this.diContainer = diContainer;
-		MovieSearchViewModel movieSearchViewModel = this.diContainer.movieSearchViewDependcies;
-		movieSearchViewModel.delegate = this;
-		new MovieSearchView(movieSearchViewModel);
+		AuthViewModel authViewModel = this.diContainer.authViewDependencies;
+		authViewModel.delegate = this;
+		this.authView = new AuthView(authViewModel);
 	}
 
 	@Override
@@ -162,6 +169,25 @@ class FrameCoordinator implements MovieSearchViewModelDelegate, ScreenViewModelD
 	public void reservationButtonReleased() {
 		// TODO Auto-generated method stub
 		this.screenView.dispose();
+	}
+
+	@Override
+	public void managerLoginCompleted() {
+		// TODO Auto-generated method stub
+		JFrame emptyFrame = new JFrame();
+		emptyFrame.setSize(500, 500);
+		emptyFrame.setVisible(true);
+		emptyFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.authView.dispose();
+	}
+
+	@Override
+	public void userLoginCompleted() {
+		// TODO Auto-generated method stub
+		MovieSearchViewModel movieSearchViewModel = this.diContainer.movieSearchViewDependcies;
+		movieSearchViewModel.delegate = this;
+		this.movieSearchView = new MovieSearchView(movieSearchViewModel);
+		this.authView.dispose();
 	}
 }
 
