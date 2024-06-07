@@ -22,6 +22,28 @@ public class ScreenService {
 
         return response;
     }
+    
+    public Screen findByScreenId(Long screenId) {
+        try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
+            List<Screen> result = screenRepository.findByScreenId(connection, screenId);
+            if (result.size() == 1) {
+            	return result.get(0);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return null;
+    }
+    
+    public void insertScreen(String insertData) throws SQLException {
+        try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
+            screenRepository.insertScreenBySqlNative(connection, insertData);
+        } catch (SQLException e) {
+            System.out.println("[insertScreen] 상영관 등록 실패");
+            throw e;
+        }
+    }
 
     public int updateScreen(String setClause) {
         try (Connection connection = DatabaseConfig.getConnectionAdmin()) {

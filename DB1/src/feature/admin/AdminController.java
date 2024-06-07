@@ -1,5 +1,6 @@
 package feature.admin;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import core.domain.member.Member;
@@ -64,6 +65,76 @@ public class AdminController {
     }
     
     // INSERT
+    
+    // 예시 ('세종이', '010-8282-8282', 'sju@example.com')
+    public boolean insertMemberByData(String insertData) {
+    	try {
+        	memberService.insertMember(insertData);
+    	} catch (SQLException e) {
+			return false;
+		}
+    	return true;
+    }
+    
+    // 예시 ('Inception', '02:28:00', '15세이상관람가', 'Christopher Nolan', 'Leonardo DiCaprio', 'Sci-Fi', 'A thief who steals corporate secrets through the use of dream-sharing technology.', '2010-07-16', 8.8)
+    public boolean insertMovieByData(String insertData) {
+        try {
+            movieService.insertMovie(insertData);
+        } catch (SQLException e) {
+            return false;
+        }
+        return true;
+    }
+    
+    // 예시 ('CARD', 'COMPLETED', 12000, '2024-06-07', 1)
+    public boolean insertReservationByData(String insertData) {
+        try {
+            reservationService.insertReservation(insertData);
+        } catch (SQLException e) {
+            return false;
+        }
+        return true;
+    }
+    
+    // 예시 ('Screen 1', true, 10, 20)
+    public boolean insertScreenByData(String insertData) {
+        try {
+            screenService.insertScreen(insertData);
+        } catch (SQLException e) {
+            return false;
+        }
+        return true;
+    }
+    
+    // 예시 ('2024-06-10', '14:30:00', 'MON', 1, 1, 1)
+    public boolean insertScreeningScheduleByData(String insertData) {
+        try {
+            screeningScheduleService.insertScreeningSchedule(insertData);
+        } catch (SQLException e) {
+            return false;
+        }
+        return true;
+    }
+
+    // 예시 (true, 5, 10, 1, 1)
+    public boolean insertSeatByData(String insertData) {
+        try {
+            seatService.insertSeat(insertData);
+        } catch (SQLException e) {
+            return false;
+        }
+        return true;
+    }
+    
+    // 예시 (true, 1000, 900, 1, 1, 1, 1)
+    public boolean insertTicketByData(String insertData) {
+        try {
+            ticketService.insertTicket(insertData);
+        } catch (SQLException e) {
+            return false;
+        }
+        return true;
+    }
     
 
     // DELETE

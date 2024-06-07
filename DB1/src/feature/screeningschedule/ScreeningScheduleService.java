@@ -34,6 +34,15 @@ public class ScreeningScheduleService {
         return response;
     }
     
+    public void insertScreeningSchedule(String insertData) throws SQLException {
+        try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
+            screeningScheduleRepository.insertScreeningScheduleBySqlNative(connection, insertData);
+        } catch (SQLException e) {
+            System.out.println("[insertScreeningSchedule] 상영일정 등록 실패");
+            throw e;
+        }
+    }
+    
     public int updateScreeningSchedule(String setClause) {
         try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
             return screeningScheduleRepository.updateScreeningScheduleBySqlNative(connection, setClause);

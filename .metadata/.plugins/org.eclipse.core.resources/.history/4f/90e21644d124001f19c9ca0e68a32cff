@@ -50,9 +50,9 @@ class DIContainer {
 	AdminViewModel adimViewDependencies;
 	
 	DIContainer() {
-		DatabaseInitializer databaseInitializer = new DatabaseInitializer();
-        databaseInitializer.initializeDatabase();
-        
+//    	DatabaseInitializer dbinitializer = new DatabaseInitializer();
+//    	dbinitializer.initializeDatabase();
+    	
         MovieRepository movieRepository = new MovieRepository();
         MovieService movieService = new MovieService(movieRepository);
 
@@ -101,9 +101,69 @@ class DIContainer {
         AuthService authService = new AuthService(memberRepository);
         AuthController authController = new AuthController(authService); 
         
+//        authController.login("root", "1234");
+
+        // 필터조회
+        List<Movie> movies = userController.searchMovies(new SearchCriteria("기생충", null, null, null));
+
+        System.out.println("Movies:");
+        for (Movie movie : movies) {
+            System.out.println(movie);
+        }
+        
+
+        // 상영일정 조회
+        List<ScreeningSchedule> screeningSchedules = userController.getScreeningScheduleByMovieId(movies.get(0).getMovieId());
+        
+        System.out.println("\nScreening Schedules:");
+        for (ScreeningSchedule screeningSchedule : screeningSchedules) {
+            System.out.println(screeningSchedule);
+        }
+
+       
+        // 선택 가능 좌석 확인
+        List<Seat> seats = userController.getUnavailableSeats(1L);
+        System.out.println("\nSeats:");
+        for (Seat seat : seats) {
+            System.out.println(seat);
+        }
+        
+        // 예약진행
+        SeatRequest seatRequest = new SeatRequest(5, 5, 33L, 1L);
+        TicketRequest ticketRequest = new TicketRequest(12000, 12000, seatRequest);
+        ReservationRequest reservationRequest = new ReservationRequest(List.of(ticketRequest), PaymentMethodType.CARD, 1L);
+        ReservationResponse reservationResponse = userController.createReservation(reservationRequest);
+        System.out.println(reservationResponse);
+        
         this.authViewDependencies = new AuthViewModel(authController);
         this.movieSearchViewDependcies = new MovieSearchViewModel(userController);
         this.adimViewDependencies = new AdminViewModel(adminController);
+        
+        // 예약목록 조회 샘플 코드
+        List<ReverationSummary> reverationSummaries = userController.getReservationSummary(userController.getMember());
+        System.out.println(reverationSummaries);
+        
+        List<TicketInfoResponse> ticketInfoResponses = userController.getTicketInfoResponses(reverationSummaries.get(0).revervationId());
+        System.out.println(ticketInfoResponses);
+        
+        System.out.println("기존 예약정보 개수: " + reverationSummaries.size());
+        if (userController.removeReservation(reverationSummaries.get(0).revervationId())) {
+        	System.out.println("삭제후 예약정보 개수: " + userController.getReservationSummary(userController.getMember()).size());
+        }else {
+        	System.out.println("삭제실패");
+        }
+        
+        
+        // 예억 정보 수정
+        SeatRequest newSeatRequest = new SeatRequest(6, 6, 33L, 1L);
+        TicketRequest newTicketRequest = new TicketRequest(12000, 12000, newSeatRequest);
+        ReservationRequest newReservationRequest = new ReservationRequest(List.of(newTicketRequest), PaymentMethodType.CARD, 1L);
+        ReservationResponse newReservationResponse = userController.updateReservation(reservationResponse.reservation().getReservationId(), newReservationRequest);
+        System.out.println("기존예약정보: "+reservationResponse);
+        System.out.println("새 예약정보: "+newReservationResponse);
+        
+        
+        
 	}
 	
 	public ScreenViewModel screenViewDependencies(Movie movie, Long reservationId) {

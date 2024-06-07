@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import core.domain.ticket.Ticket;
+import core.domain.ticket.TicketInfoResponse;
 
 public class TicketRepository {
 	public List<Ticket> findAllTickets(Connection conn) {
@@ -59,6 +60,52 @@ public class TicketRepository {
 		return ticketId;
 	}
 	
+	//티켓 정보 조회
+	public List<TicketInfoResponse> findTicketInfoResponsesByReservationId(Connection connection, Long reservationId) {
+        String sql = "SELECT " +
+                     "R.reservation_id, " +
+                     "T.ticket_id, " +
+                     "M.title AS movie_title, " +
+                     "SS.start_date, " +
+                     "SS.start_time, " +
+                     "SS.day_of_week, " +
+                     "SS.session_number, " +
+                     "S.name AS screen_name, " +
+                     "T.standard_price, " +
+                     "ST.row_number AS seat_row, " +
+                     "ST.col_number AS seat_col, " +
+                     "T.sale_price " +
+                     "FROM reservation R " +
+                     "INNER JOIN ticket T ON R.reservation_id = T.reservation_id " +
+                     "INNER JOIN screening_schedule SS ON T.screening_schedule_id = SS.schedule_id " +
+                     "INNER JOIN movie M ON SS.movie_id = M.movie_id " +
+                     "INNER JOIN screen S ON T.screen_id = S.screen_id " +
+                     "INNER JOIN seat ST ON T.seat_id = ST.seat_id " +
+                     "WHERE R.reservation_id = ?";
+
+        List<TicketInfoResponse> ticketInfoResponses = new ArrayList<>();
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setLong(1, reservationId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    ticketInfoResponses.add(TicketInfoResponse.from(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return ticketInfoResponses;
+    }
+	
+	public void insertTicketBySqlNative(Connection connection, String insertData) throws SQLException{
+		String sql = "INSERT INTO ticket (is_issued, standard_price, sale_price, screening_schedule_id, screen_id, reservation_id, seat_id) VALUES " + insertData;
+    	try (Statement statement = connection.createStatement()){
+    		 statement.execute(sql.trim());
+		}
+	}
+	
 	public int updateTicketBySqlNative(Connection connection, String setClause) throws SQLException {
         String sql = "UPDATE ticket " + setClause;
         try (Statement stmt = connection.createStatement()) {
@@ -70,6 +117,15 @@ public class TicketRepository {
         String sql = "DELETE FROM ticket " + whereClause;
         try (Statement stmt = connection.createStatement()) {
             return stmt.executeUpdate(sql);
+        }
+    }
+    
+    public void deleteTicketsByReservationId(Connection connection, Long reservationId) throws SQLException {
+        String sql = "DELETE FROM ticket WHERE reservation_id = ?";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setLong(1, reservationId);
+            pstmt.executeUpdate();
         }
     }
 

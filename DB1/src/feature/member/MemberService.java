@@ -22,6 +22,15 @@ public class MemberService {
 
         return response;
     }
+    
+    public void insertMember(String insertData) throws SQLException {
+    	try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
+    		userRepository.insertMemberBySqlNative(connection, insertData);
+    	} catch (SQLException e) {
+    		System.out.println("[insertMember] 멤버 등록 실패");
+    		throw e;
+		}
+    }
 
     public int updateMember(String setClause) {
         try (Connection connection = DatabaseConfig.getConnectionAdmin()) {

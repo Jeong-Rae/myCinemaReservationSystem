@@ -8,6 +8,7 @@ import java.util.List;
 import core.domain.reservation.Reservation;
 import core.domain.seat.Seat;
 import core.domain.ticket.Ticket;
+import core.domain.ticket.TicketInfoResponse;
 import core.domain.ticket.TicketRequest;
 import infrastructure.config.DatabaseConfig;
 import infrastructure.repository.TicketRepository;
@@ -24,6 +25,17 @@ public class TicketService {
         }
 
         return response;
+    }
+    
+    public List<TicketInfoResponse> findInfoResponses(Long reservationId) {
+    	List<TicketInfoResponse> response = new ArrayList<>();
+    	try (Connection connection = DatabaseConfig.getConnectionUser()) {
+			response = ticketRepository.findTicketInfoResponsesByReservationId(connection, reservationId);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+    	
+    	return response;
     }
     
     //티켓 예약
@@ -48,6 +60,34 @@ public class TicketService {
     	
     	return ticket;
     	
+    }
+    
+  //티켓 예약
+    public Ticket createTicket(Connection connection, TicketRequest request, Seat seat, Reservation reservation) {
+    	Ticket ticket = new Ticket(false, request.standardPrice(), request.salePrice());
+    	ticket.setSeatId(seat.getSeatId());
+    	ticket.setScreenId(seat.getScreenId());
+    	ticket.setScreeningScheduleId(seat.getScreeningScheduleId());
+    	ticket.setReservationId(reservation.getReservationId());
+    	
+    	Long ticketId;
+	
+        ticketId = ticketRepository.insertToTicket(connection, ticket);
+        ticket.setTicketId(ticketId);
+        
+        System.out.println("[createTicket] ticket: " + ticket);
+    	
+    	return ticket;
+    	
+    }
+    
+    public void insertTicket(String insertData) throws SQLException {
+        try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
+            ticketRepository.insertTicketBySqlNative(connection, insertData);
+        } catch (SQLException e) {
+            System.out.println("[insertTicket] 티켓 등록 실패");
+            throw e;
+        }
     }
     
     public int updateTicket(String setClause) {

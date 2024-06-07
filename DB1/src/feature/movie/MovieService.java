@@ -36,6 +36,15 @@ public class MovieService {
 		return response;
 	}
 	
+	public void insertMovie(String insertData) throws SQLException {
+        try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
+            movieRepository.insertMovieBySqlNative(connection, insertData);
+        } catch (SQLException e) {
+            System.out.println("[insertMovie] 영화 등록 실패");
+            throw e;
+        }
+    }
+	
 	public int updateMovie(String setClause) {
 		try(Connection connection = DatabaseConfig.getConnectionAdmin()) {
 			return movieRepository.updateMovieBySqlNative(connection, setClause);
