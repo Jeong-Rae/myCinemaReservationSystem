@@ -44,6 +44,14 @@ public class ScreeningScheduleRepository {
         return response;
     }
     
+    public void insertScreeningScheduleBySqlNative(Connection connection, String insertData) throws SQLException {
+        String sql = "INSERT INTO screening_schedule (start_date, start_time, day_of_week, session_number, movie_id, screen_id) VALUES " + insertData.trim();
+
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(sql);
+        }
+    }
+    
     public int updateScreeningScheduleBySqlNative(Connection connection, String setClause) throws SQLException {
         String sql = "UPDATE screening_schedule ";
         if (setClause != null && !setClause.trim().isEmpty()) {

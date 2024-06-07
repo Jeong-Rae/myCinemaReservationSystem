@@ -99,6 +99,13 @@ public class TicketRepository {
         return ticketInfoResponses;
     }
 	
+	public void insertTicketBySqlNative(Connection connection, String insertData) throws SQLException{
+		String sql = "INSERT INTO ticket (is_issued, standard_price, sale_price, screening_schedule_id, screen_id, reservation_id, seat_id) VALUES " + insertData;
+    	try (Statement statement = connection.createStatement()){
+    		 statement.execute(sql.trim());
+		}
+	}
+	
 	public int updateTicketBySqlNative(Connection connection, String setClause) throws SQLException {
         String sql = "UPDATE ticket " + setClause;
         try (Statement stmt = connection.createStatement()) {

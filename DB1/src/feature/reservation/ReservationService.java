@@ -66,6 +66,15 @@ public class ReservationService {
     	
     	return response;
     }
+    
+    public void insertReservation(String insertData) throws SQLException {
+        try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
+            reservationRepository.insertReservationBySqlNative(connection, insertData);
+        } catch (SQLException e) {
+            System.out.println("[insertReservation] 예약 등록 실패");
+            throw e;
+        }
+    }
 
     public int updateReservation(String setClause) {
         try (Connection connection = DatabaseConfig.getConnectionAdmin()) {

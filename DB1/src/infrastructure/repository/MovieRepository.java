@@ -55,6 +55,14 @@ public class MovieRepository {
 
 		return movies;
 	}
+	
+	public void insertMovieBySqlNative(Connection connection, String insertData) throws SQLException {
+        String sql = "INSERT INTO movie (title, duration, rating, director, actor, genre, description, release_date, score) VALUES " + insertData.trim();
+
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(sql);
+        }
+    }
 
 	public int updateMovieBySqlNative(Connection connection, String setClause) throws SQLException{
 		String sql = "UPDATE movie ";

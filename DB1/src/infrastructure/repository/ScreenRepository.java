@@ -43,6 +43,14 @@ public class ScreenRepository {
 
         return response;
     }
+    
+    public void insertScreenBySqlNative(Connection connection, String insertData) throws SQLException {
+        String sql = "INSERT INTO screen (name, is_active, row_size, col_size) VALUES " + insertData.trim();
+
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(sql);
+        }
+    }
 
     public int updateScreenBySqlNative(Connection connection, String setClause) throws SQLException {
         String sql = "UPDATE screen ";

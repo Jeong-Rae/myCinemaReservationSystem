@@ -89,6 +89,14 @@ public class ReservationRepository {
         
         return reservationId;
     }
+    
+    public void insertReservationBySqlNative(Connection connection, String insertData) throws SQLException {
+        String sql = "INSERT INTO reservation (payment_method, payment_status, amount, payment_date, member_id) VALUES " + insertData.trim();
+
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(sql);
+        }
+    }
 
     public int updateReservationBySqlNative(Connection connection, String setClause) throws SQLException {
         String sql = "UPDATE reservation ";

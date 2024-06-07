@@ -58,6 +58,15 @@ public class SeatService {
     	
     }
     
+    public void insertSeat(String insertData) throws SQLException {
+        try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
+            seatRepository.insertSeatBySqlNative(connection, insertData);
+        } catch (SQLException e) {
+            System.out.println("[insertSeat] 좌석 등록 실패");
+            throw e;
+        }
+    }
+    
     public int updateSeat(String setClause) {
         try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
             return seatRepository.updateSeatBySqlNative(connection, setClause);

@@ -81,6 +81,14 @@ public class SeatRepository {
         return seatId;
     }
     
+    public void insertSeatBySqlNative(Connection connection, String insertData) throws SQLException {
+        String sql = "INSERT INTO seat (is_active, row_number, col_number, screen_id, screening_schedule_id) VALUES " + insertData.trim();
+
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(sql);
+        }
+    }
+    
     public int updateSeatBySqlNative(Connection connection, String setClause) throws SQLException {
         String sql = "UPDATE seat ";
         if (setClause != null && !setClause.trim().isEmpty()) {

@@ -41,6 +41,14 @@ public class MemberRepository {
     	
     	return null;
     }
+    
+    public void insertMemberBySqlNative(Connection connection, String insertData) throws SQLException {
+        String sql = "INSERT INTO member (name, phone_number, email) VALUES " + insertData.trim();
+
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(sql);
+        }
+    }
 
     public int updateMemberBySqlNative(Connection connection, String setClause) throws SQLException {
         String sql = "UPDATE MEMBER ";
