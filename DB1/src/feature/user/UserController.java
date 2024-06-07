@@ -3,6 +3,7 @@ package feature.user;
 import java.util.ArrayList;
 import java.util.List;
 
+import core.domain.member.Member;
 import core.domain.movie.Movie;
 import core.domain.reservation.Reservation;
 import core.domain.screen.Screen;
@@ -38,9 +39,27 @@ public class UserController {
         return movieService.findMovieByCriteria(criteria);
     }
     
+    public Movie getMovieByScreeningSchedule(ScreeningSchedule schedule) {
+    	return this.movieService
+    			.findAllMovies()
+    			.stream()
+    			.filter(movie -> movie.getMovieId() == schedule.getMovieId())
+    			.toList()
+    			.get(0);
+    }
+    
     // 영화 기준, 상영일정 조회
     public List<ScreeningSchedule> getScreeningScheduleByMovieId(Long movieId) {
     	return screeningScheduleService.findScreeningSchedulesByMovieId(movieId);
+    }
+    
+    public ScreeningSchedule getScreeningScheduleById(long scheduleId) {
+    	return this.screeningScheduleService
+    			.findAllScreeningSchedules()
+    			.stream()
+    			.filter(schedule -> schedule.getScheduleId() == scheduleId)
+    			.toList()
+    			.get(0);
     }
     
     // 예약 불가 좌석 조회
@@ -78,8 +97,28 @@ public class UserController {
     	return response;
     }
     
+    public List<Reservation> getReservationsByMemberId(long memberId) {
+    	return this.reservationService
+    			.findAllReservations()
+    			.stream()
+    			.filter(reservation -> reservation.getMemberId() == memberId)
+    			.toList();
+    }
+    
+    public Member getMember() {
+    	return this.memberService.findAllMembers().get(0);
+    }
+    
     public long getMemberId() {
     	return this.memberService.findAllMembers().get(0).getMemberId();
+    }
+    
+    public List<Ticket> getTicketsByReservationId(long reservationId) {
+    	return this.ticketService
+    			.findAllTickets()
+    			.stream()
+    			.filter(ticket -> ticket.getReservationId() == reservationId)
+    			.toList();
     }
     
     // 본인이 예약한 정보 조회

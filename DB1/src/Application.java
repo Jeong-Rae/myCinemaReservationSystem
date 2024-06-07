@@ -137,7 +137,7 @@ class DIContainer {
         System.out.println(reservationResponse);
         
         this.authViewDependencies = new AuthViewModel(authController);
-        this.movieSearchViewDependcies = new MovieSearchViewModel(movieService);
+        this.movieSearchViewDependcies = new MovieSearchViewModel(userController);
         this.adimViewDependencies = new AdminViewModel(adminController);
 	}
 	

@@ -23,6 +23,97 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 
+import core.domain.reservation.Reservation;
+
+class ReservationTableHeaderRenderer extends DefaultTableCellRenderer {
+	@Override
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        c.setFont(new Font(null, Font.BOLD, 16));
+
+        return c;
+    }
+}
+
+class ReservationTableCellRenderer extends DefaultTableCellRenderer {
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        c.setFont(new Font(null, Font.PLAIN, 12));
+        // 선택된 셀의 배경색과 텍스트 색상 설정
+        if (isSelected) {
+            c.setBackground(Color.LIGHT_GRAY);
+            c.setForeground(Color.WHITE);
+        } else {
+            c.setBackground(Color.WHITE);
+            c.setForeground(Color.BLACK);
+        }
+
+        return c;
+    }
+}
+
+class TicketTable extends JTable {
+	private MovieSearchViewModel viewModel;
+	
+	TicketTable(MovieSearchViewModel viewModel) {
+		this.viewModel = viewModel;
+		this.setModel(this.viewModel.ticketsToTableModel());
+		this.setRowHeight(40);
+		this.setDefaultRenderer(Object.class, new ReservationTableCellRenderer());
+		
+		JTableHeader header = this.getTableHeader();
+		header.setDefaultRenderer(new ReservationTableHeaderRenderer());
+		TableColumn durationHeader = header.getColumnModel().getColumn(1);
+		durationHeader.setWidth(100);
+	}
+}
+
+class ReservationTable extends JTable {
+	private MovieSearchViewModel viewModel;
+	
+	ReservationTable(MovieSearchViewModel viewModel) {
+		this.viewModel = viewModel;
+		this.setModel(this.viewModel.reservationsToTableModel());
+		this.setRowHeight(40);
+		this.setDefaultRenderer(Object.class, new ReservationTableCellRenderer());
+		
+		JTableHeader header = this.getTableHeader();
+		header.setDefaultRenderer(new ReservationTableHeaderRenderer());
+	}
+}
+
+class ReservationListPanel extends JPanel implements ListSelectionListener {
+	private MovieSearchViewModel viewModel;
+	private ReservationTable reservationTable;
+	private TicketTable tickeTable;
+	
+	ReservationListPanel(MovieSearchViewModel viewModel) {
+		this.viewModel = viewModel;
+		this.setLayout(new BorderLayout());
+		
+		this.reservationTable = new ReservationTable(this.viewModel);
+		this.reservationTable.getSelectionModel().addListSelectionListener(this);
+		
+		JScrollPane reservationTableScrollPane = new JScrollPane();
+		reservationTableScrollPane.setViewportView(this.reservationTable);
+		this.add(reservationTableScrollPane, BorderLayout.NORTH);
+		
+		this.tickeTable = new TicketTable(this.viewModel);
+		
+		JScrollPane tickeTableScrollPane = new JScrollPane();
+		tickeTableScrollPane.setViewportView(this.tickeTable);
+		this.add(tickeTableScrollPane, BorderLayout.CENTER);
+	}
+
+	@Override
+	public void valueChanged(ListSelectionEvent e) {
+		// TODO Auto-generated method stub
+		this.viewModel.reservationCellSelected(this.reservationTable.getSelectedRow());
+		this.tickeTable.setModel(this.viewModel.ticketsToTableModel());
+	}
+}
+
 class MovieTableHeaderRenderer extends DefaultTableCellRenderer {
 	@Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -219,6 +310,8 @@ public class MovieSearchView extends JFrame implements ListSelectionListener {
 		this.add(scrollPane, BorderLayout.CENTER);
 		
 		this.add(new MovieSearchTitlePanel(this.viewModel, this.table), BorderLayout.NORTH);
+		
+		this.add(new ReservationListPanel(this.viewModel), BorderLayout.EAST);
 		
 		this.setVisible(true);
 		this.setDefaultCloseOperation(this.EXIT_ON_CLOSE);
