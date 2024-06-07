@@ -142,7 +142,7 @@ class DIContainer {
         List<ReverationSummary> reverationSummaries = userController.getReservationSummary(userController.getMember());
         System.out.println(reverationSummaries);
         
-        List<TicketInfoResponse> ticketInfoResponses = userController.getTicketInfoResponses(1L);
+        List<TicketInfoResponse> ticketInfoResponses = userController.getTicketInfoResponses(reverationSummaries.get(0).revervationId());
         System.out.println(ticketInfoResponses);
         
 	}
