@@ -71,7 +71,7 @@ class DIContainer {
         MemberService memberService = new MemberService(memberRepository);
 
         ReservationRepository reservationRepository = new ReservationRepository();
-        ReservationService reservationService = new ReservationService(reservationRepository);
+        ReservationService reservationService = new ReservationService(reservationRepository, ticketRepository, ticketService, seatService);
 
         // 관리자 컨트롤러
         AdminController adminController = new AdminController(
@@ -144,6 +144,24 @@ class DIContainer {
         
         List<TicketInfoResponse> ticketInfoResponses = userController.getTicketInfoResponses(reverationSummaries.get(0).revervationId());
         System.out.println(ticketInfoResponses);
+        
+        System.out.println("기존 예약정보 개수: " + reverationSummaries.size());
+        if (userController.removeReservation(reverationSummaries.get(0).revervationId())) {
+        	System.out.println("삭제후 예약정보 개수: " + userController.getReservationSummary(userController.getMember()).size());
+        }else {
+        	System.out.println("삭제실패");
+        }
+        
+        
+        // 예억 정보 수정
+        SeatRequest newSeatRequest = new SeatRequest(6, 6, 33L, 1L);
+        TicketRequest newTicketRequest = new TicketRequest(12000, 12000, newSeatRequest);
+        ReservationRequest newReservationRequest = new ReservationRequest(List.of(newTicketRequest), PaymentMethodType.CARD, 1L);
+        ReservationResponse newReservationResponse = userController.updateReservation(reservationResponse.reservation().getReservationId(), newReservationRequest);
+        System.out.println("기존예약정보: "+reservationResponse);
+        System.out.println("새 예약정보: "+newReservationResponse);
+        
+        
         
 	}
 	

@@ -16,7 +16,7 @@ public class DatabaseConfig {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver"); // MySQL 드라이버 로드
 			Connection conn = DriverManager.getConnection(DB_URL, ROOT, ROOT_PASSWORD); // JDBC 연결
-			System.out.println("DB 연결 완료 " + ROOT);
+			//System.out.println("DB 연결 완료 " + ROOT);
 			
 			return conn;
 		} catch (ClassNotFoundException ex) {
@@ -31,7 +31,7 @@ public class DatabaseConfig {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			Connection conn = DriverManager.getConnection(DB_URL, USER, USER_PASSWORD);
-			System.out.println("DB 연결 완료 " + USER);
+			//System.out.println("DB 연결 완료 " + USER);
 			
 			return conn;
 		} catch (ClassNotFoundException ex) {

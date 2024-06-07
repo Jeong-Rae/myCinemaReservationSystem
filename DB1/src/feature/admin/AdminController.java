@@ -136,8 +136,6 @@ public class AdminController {
         return true;
     }
     
-    
-    
 
     // DELETE
     public int deleteMembersByWhereClause(String whereClause) {

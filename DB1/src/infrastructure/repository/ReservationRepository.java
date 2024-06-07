@@ -29,6 +29,22 @@ public class ReservationRepository {
         return response;
     }
     
+    public Reservation findById(Connection connection, Long reservationId) {
+    	String sql = "SELECT * FROM reservation WHERE reservation_id=" +reservationId;
+    	
+    	Reservation reservation = null;
+    	
+    	try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                reservation = Reservation.RsToReservation(rs);
+            }
+        } catch (SQLException e) {
+            System.out.println("[findAllReservations] Reservation 테이블 조회 실패");
+            e.printStackTrace();
+        }
+    	return reservation;
+    }
+    
     public List<ReverationSummary> findReverationsByMemberId(Connection connection, Long memberId) {
     	String sql = "SELECT \r\n"
     			+ "		R.reservation_id AS reservation_id,\r\n"
@@ -117,6 +133,15 @@ public class ReservationRepository {
 
         try (Statement stmt = connection.createStatement()) {
             return stmt.executeUpdate(sql);
+        }
+    }
+    
+    public void deleteReservationById(Connection connection, Long reservationId) throws SQLException {
+        String sql = "DELETE FROM reservation WHERE reservation_id = ?";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setLong(1, reservationId);
+            pstmt.executeUpdate();
         }
     }
 }

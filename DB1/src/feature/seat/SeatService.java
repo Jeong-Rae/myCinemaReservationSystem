@@ -58,6 +58,23 @@ public class SeatService {
     	
     }
     
+  //좌석예약
+    public Seat createSeat(Connection connection, SeatRequest request) {
+    	Seat seat = new Seat(true, request.rowNumber(), request.colNumber());
+    	seat.setScreenId(request.screenId());
+    	seat.setScreeningScheduleId(request.screeningScheduleId());
+    	Long seatId;
+    	
+        seatId = seatRepository.insertToSeat(connection, seat);
+        seat.setSeatId(seatId);
+       
+        System.out.println("[createSeat] seat: " + seat);
+	
+    	
+    	return seat;
+    	
+    }
+    
     public void insertSeat(String insertData) throws SQLException {
         try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
             seatRepository.insertSeatBySqlNative(connection, insertData);

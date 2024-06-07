@@ -119,6 +119,15 @@ public class TicketRepository {
             return stmt.executeUpdate(sql);
         }
     }
+    
+    public void deleteTicketsByReservationId(Connection connection, Long reservationId) throws SQLException {
+        String sql = "DELETE FROM ticket WHERE reservation_id = ?";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setLong(1, reservationId);
+            pstmt.executeUpdate();
+        }
+    }
 
 	public TicketRepository() {
 	}

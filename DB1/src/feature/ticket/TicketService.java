@@ -62,6 +62,25 @@ public class TicketService {
     	
     }
     
+  //티켓 예약
+    public Ticket createTicket(Connection connection, TicketRequest request, Seat seat, Reservation reservation) {
+    	Ticket ticket = new Ticket(false, request.standardPrice(), request.salePrice());
+    	ticket.setSeatId(seat.getSeatId());
+    	ticket.setScreenId(seat.getScreenId());
+    	ticket.setScreeningScheduleId(seat.getScreeningScheduleId());
+    	ticket.setReservationId(reservation.getReservationId());
+    	
+    	Long ticketId;
+	
+        ticketId = ticketRepository.insertToTicket(connection, ticket);
+        ticket.setTicketId(ticketId);
+        
+        System.out.println("[createTicket] ticket: " + ticket);
+    	
+    	return ticket;
+    	
+    }
+    
     public void insertTicket(String insertData) throws SQLException {
         try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
             ticketRepository.insertTicketBySqlNative(connection, insertData);

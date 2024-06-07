@@ -1,5 +1,6 @@
 package feature.user;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,6 +109,31 @@ public class UserController {
 		
 		return response;
 	}
+    
+    // 예약 삭제
+    // 티켓 전부 지우고, 예약 삭제
+    public boolean removeReservation(Long reservationId) {
+    	try {
+            reservationService.deleteReservationAndTickets(reservationId);
+        } catch (SQLException e) {
+            return false;
+        }
+        return true;
+    }
+    
+    
+    // 예약 정보 변경 -> 새로운 Request 정보 받아서 싹 update
+    // 문제 생기면 null
+    public ReservationResponse updateReservation(Long reservationId, ReservationRequest request) {
+        try {
+            return reservationService.updateReservationWithTicket(reservationId, request);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    
     
     public List<Reservation> getReservationsByMemberId(long memberId) {
     	return this.reservationService
