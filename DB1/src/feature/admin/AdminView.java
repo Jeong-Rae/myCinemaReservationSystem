@@ -28,7 +28,9 @@ class SQLQueryAreaPanel extends JPanel {
 	AdminViewModel viewModel;
 	JTextArea textArea;
 	private Table table;
-	String placeholder = "*생성인 경우만* 예시 ('세종이', '010-8282-8282', 'sju@example.com')";
+	String placeholder = "*생성인 경우* 예시 ('세종이', '010-8282-8282', 'sju@example.com')\n"
+			+ "*변경인 경우* 예시 SET name = '홍길동', email = 'hong@example.com' WHERE member_id = 1\n"
+			+ "*삭제인 경우* 예시 WHERE email = 'hong@example.com'";
 	
 	SQLQueryAreaPanel(AdminViewModel viewModel, Table table) {
 		this.viewModel = viewModel;
@@ -214,25 +216,39 @@ class TableButton extends JButton implements ActionListener {
 	private void updatePlaceholder() {
 		switch (this.viewModel.currentTable) {
 		case MEMBER:
-			this.sqlQueryAreaPanel.placeholder = "*생성인 경우만* 예시 ('세종이', '010-8282-8282', 'sju@example.com')";
+			this.sqlQueryAreaPanel.placeholder = "*생성인 경우* 예시 ('세종이', '010-8282-8282', 'sju@example.com')\n"
+					+ "*변경인 경우* 예시 SET name = '홍길동', email = 'hong@example.com' WHERE member_id = 1\n"
+					+ "*삭제인 경우* 예시 WHERE email = 'hong@example.com'";
 			break;
 		case MOVIE:
-			this.sqlQueryAreaPanel.placeholder = "*생성인 경우만* 예시 ('Inception', '02:28:00', '15세이상관람가', 'Christopher Nolan', 'Leonardo DiCaprio', 'Sci-Fi', 'A thief who steals corporate secrets through the use of dream-sharing technology.', '2010-07-16', 8.8)";
+			this.sqlQueryAreaPanel.placeholder = "*생성인 경우* 예시 ('Inception', '02:28:00', '15세이상관람가', 'Christopher Nolan', 'Leonardo DiCaprio', 'Sci-Fi', 'A thief who steals corporate secrets through the use of dream-sharing technology.', '2010-07-16', 8.8)\n"
+					+ "*변경인 경우* 예시 SET title = '기생충', director = '봉준호' WHERE movie_id = 1\n"
+					+ "*삭제인 경우* 예시 WHERE director = '봉준호'";
 			break;
 		case RESERVATION:
-			this.sqlQueryAreaPanel.placeholder = "*생성인 경우만* 예시 ('CARD', 'COMPLETED', 12000, '2024-06-07', 1)";
+			this.sqlQueryAreaPanel.placeholder = "*생성인 경우* 예시 ('CARD', 'COMPLETED', 12000, '2024-06-07', 1)\n"
+					+ "*변경인 경우* 예시 SET payment_status = 'IN_PROGRESS', amount = 15000 WHERE reservation_id = 1\n"
+					+ "*삭제인 경우* 예시 WHERE payment_method = 'CASH'";
 			break;
 		case SCHEDULE:
-			this.sqlQueryAreaPanel.placeholder = "*생성인 경우만* 예시 ('2024-06-10', '14:30:00', 'MON', 1, 1, 1)";
+			this.sqlQueryAreaPanel.placeholder = "*생성인 경우* 예시 ('2024-06-10', '14:30:00', 'MON', 1, 1, 1)\n"
+					+ "*변경인 경우* 예시 SET start_date = '2024-07-01', start_time = '14:00:00' WHERE schedule_id = 1\n"
+					+ "*삭제인 경우* 예시 WHERE movie_id = 2";
 			break;
 		case SCREEN:
-			this.sqlQueryAreaPanel.placeholder = "*생성인 경우만* 예시 ('Screen 1', true, 10, 20)";
+			this.sqlQueryAreaPanel.placeholder = "*생성인 경우* 예시 ('Screen 1', true, 10, 20)\n"
+					+ "*변경인 경우* 예시 SET name = '새로운 상영관', is_active = 0 WHERE screen_id = 1\n"
+					+ "*삭제인 경우* 예시 WHERE name = '1관'";
 			break;
 		case SEAT:
-			this.sqlQueryAreaPanel.placeholder = "*생성인 경우만* 예시 (true, 5, 10, 1, 1)";
+			this.sqlQueryAreaPanel.placeholder = "*생성인 경우* 예시 (true, 5, 10, 1, 1)\n"
+					+ "*변경인 경우* 예시 SET standard_price = 15000, sale_price = 12000 WHERE ticket_id = 1\n"
+					+ "*삭제인 경우* 예시 WHERE screening_schedule_id = 3";
 			break;
 		case TICKET:
-			this.sqlQueryAreaPanel.placeholder = "*생성인 경우만* 예시 (true, 1000, 900, 1, 1, 1, 1))";
+			this.sqlQueryAreaPanel.placeholder = "*생성인 경우* 예시 (true, 1000, 900, 1, 1, 1, 1))\n"
+					+ "*변경인 경우* 예시 SET standard_price = 15000, sale_price = 12000 WHERE ticket_id = 1\n"
+					+ "*삭제인 경우* 예시 WHERE screening_schedule_id = 3";
 			break;
 		}
 		
@@ -306,7 +322,10 @@ class TableButtonsPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				if(showConfirmDialog("정말로 초기화 하시겠습니까?")) {
+				if(showConfirmDialog("정말로 초기화 하시겠습니까?\n다음 작업이 수행됩니다.\n"
+						+ "// 테이블 초기화 및 생성\n"
+						+ "// user1 생성\n"
+						+ "// 샘플데이터 삽입")) {
 					viewModel.resetButtonClicked();
 					switch (viewModel.currentTable) {
 					case MEMBER:
