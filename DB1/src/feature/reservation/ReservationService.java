@@ -63,17 +63,17 @@ public class ReservationService {
     
     //member 에약 조회
     public List<ReverationSummary> findReverationSummaryesByMemberId(long memberId) {
-    	List<ReverationSummary> response = new ArrayList<ReverationSummary>();
-    	try (Connection connection = DatabaseConfig.getConnectionUser()) {
-    		response = reservationRepository.findReverationsByMemberId(connection, memberId);
-    		
-    		System.out.println("[findReverationSummaryes] memberId: " + memberId);
-    		return response;
+        List<ReverationSummary> response = new ArrayList<>();
+        try (Connection connection = DatabaseConfig.getConnectionUser()) {
+            response = reservationRepository.findReverationsByMemberId(connection, memberId);
+
+            System.out.println("[findReverationSummaryes] memberId: " + memberId);
+            return response;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    	
-    	return response;
+
+        return response;
     }
     
     // 예약 삭제
