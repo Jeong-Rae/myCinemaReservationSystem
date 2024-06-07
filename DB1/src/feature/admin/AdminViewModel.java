@@ -221,7 +221,7 @@ public class AdminViewModel {
 	
 	public DefaultTableModel ticketsToTableModel() {
 		String[] columns = {
-				"티켓번",
+				"티켓번호",
 				"발권여부",
 				"표준가격",
 				"판매가격",
@@ -245,10 +245,13 @@ public class AdminViewModel {
 						String.valueOf(ticket.getStandardPrice()),
 						String.valueOf(ticket.getSalePrice()),
 						String.valueOf(ticket.getScreeningScheduleId()),
+						String.valueOf(ticket.getScreenId()),
 						String.valueOf(ticket.getReservationId()),
 						String.valueOf(ticket.getSeatId())
 					})
 			);
+			
+			System.out.println(this.tickets);
 			
 			return tableModel;
 	}
@@ -281,100 +284,142 @@ public class AdminViewModel {
 		}
 	}
 	
-	public void inputButtonClicked(String setClause) {
+	public boolean insertButtonClicked(String insertData) {
+		boolean result = false;
+		
 		switch (this.currentTable) {
 		case MEMBER:
-			this.adminController.updateMembersBySetClause(setClause);
+			result = this.adminController.insertMemberByData(insertData);
 			this.members = this.adminController.getAllMembers();
 			break;
 		case MOVIE:
-			this.adminController.updateMoviesBySetClause(setClause);
+			result = this.adminController.insertMovieByData(insertData);
 			this.movies = this.adminController.getAllMovies();
 			break;
 		case RESERVATION:
-			this.adminController.updateeReservationssByWhereClause(setClause);
+			result = this.adminController.insertReservationByData(insertData);
 			this.reservations = this.adminController.getAllReservations();
 			break;
 		case SCHEDULE:
-			this.adminController.updateScreeningSchedulesByWhereClause(setClause);
+			result = this.adminController.insertScreeningScheduleByData(insertData);
 			this.schedules = this.adminController.getAllScreeningSchedules();
 			break;
 		case SCREEN:
-			this.adminController.updateScreensByWhereClause(setClause);
+			result = this.adminController.insertScreenByData(insertData);
 			this.screens = this.adminController.getAllScreens();
 			break;
 		case SEAT:
-			this.adminController.updateSeatsByWhereClause(setClause);
+			result = this.adminController.insertSeatByData(insertData);
 			this.seats = this.adminController.getAllSeats();
 			break;
 		case TICKET:
-			this.adminController.updateTicketsByWhereClause(setClause);
+			result = this.adminController.insertTicketByData(insertData);
 			this.tickets = this.adminController.getAllTickets();
 			break;
 		}
+		
+		System.out.println("insert");
+		
+		return result;
 	}
 	
-	public void deleteButtonClicked(String whereClause) {
+	public boolean deleteButtonClicked(String whereClause) {
+		boolean result = false;
+		
 		switch (this.currentTable) {
 		case MEMBER:
-			this.adminController.deleteMembersByWhereClause(whereClause);
+			result = this.adminController.deleteMembersByWhereClause(whereClause) != 0;
 			this.members = this.adminController.getAllMembers();
 			break;
 		case MOVIE:
-			this.adminController.deleteMoviesByWhereClause(whereClause);
+			result = this.adminController.deleteMoviesByWhereClause(whereClause) != 0;
 			this.movies = this.adminController.getAllMovies();
 			break;
 		case RESERVATION:
-			this.adminController.deleteReservationssByWhereClause(whereClause);
+			result = this.adminController.deleteReservationssByWhereClause(whereClause) != 0;
 			this.reservations = this.adminController.getAllReservations();
 			break;
 		case SCHEDULE:
-			this.adminController.deleteScreeningSchedulesByWhereClause(whereClause);
+			result = this.adminController.deleteScreeningSchedulesByWhereClause(whereClause) != 0;
 			this.schedules = this.adminController.getAllScreeningSchedules();
 			break;
 		case SCREEN:
-			this.adminController.deleteScreensByWhereClause(whereClause);
+			result = this.adminController.deleteScreensByWhereClause(whereClause) != 0;
 			this.screens = this.adminController.getAllScreens();
 			break;
 		case SEAT:
-			this.adminController.deleteSeatsByWhereClause(whereClause);
+			result = this.adminController.deleteSeatsByWhereClause(whereClause) != 0;
 			this.seats = this.adminController.getAllSeats();
 			break;
 		case TICKET:
-			this.adminController.deleteTicketsByWhereClause(whereClause);
+			result = this.adminController.deleteTicketsByWhereClause(whereClause) != 0;
 			this.tickets = this.adminController.getAllTickets();
 			break;
 		}
+		
+		return result;
 	}
 	
-	public void updateButtonClicked(String setClause) {
+	public boolean updateButtonClicked(String setClause) {
+		boolean result = false;
+		
 		switch (this.currentTable) {
 		case MEMBER:
-			this.adminController.updateMembersBySetClause(setClause);
+			result = this.adminController.updateMembersBySetClause(setClause) != 0;
 			this.members = this.adminController.getAllMembers();
 			break;
 		case MOVIE:
-			this.adminController.updateMoviesBySetClause(setClause);
+			result = this.adminController.updateMoviesBySetClause(setClause) != 0;
 			this.movies = this.adminController.getAllMovies();
 			break;
 		case RESERVATION:
-			this.adminController.updateeReservationssByWhereClause(setClause);
+			result = this.adminController.updateeReservationssByWhereClause(setClause) != 0;
 			this.reservations = this.adminController.getAllReservations();
 			break;
 		case SCHEDULE:
-			this.adminController.updateScreeningSchedulesByWhereClause(setClause);
+			result = this.adminController.updateScreeningSchedulesByWhereClause(setClause) != 0;
 			this.schedules = this.adminController.getAllScreeningSchedules();
 			break;
 		case SCREEN:
-			this.adminController.updateScreensByWhereClause(setClause);
+			result = this.adminController.updateScreensByWhereClause(setClause) != 0;
 			this.screens = this.adminController.getAllScreens();
 			break;
 		case SEAT:
-			this.adminController.updateSeatsByWhereClause(setClause);
+			result = this.adminController.updateSeatsByWhereClause(setClause) != 0;
 			this.seats = this.adminController.getAllSeats();
 			break;
 		case TICKET:
-			this.adminController.updateTicketsByWhereClause(setClause);
+			result = this.adminController.updateTicketsByWhereClause(setClause) != 0;
+			this.tickets = this.adminController.getAllTickets();
+			break;
+		}
+		
+		return result;
+	}
+	
+	public void resetButtonClicked() {
+		this.adminController.initializeDatabase();
+		
+		switch (this.currentTable) {
+		case MEMBER:
+			this.members = this.adminController.getAllMembers();
+			break;
+		case MOVIE:
+			this.movies = this.adminController.getAllMovies();
+			break;
+		case RESERVATION:
+			this.reservations = this.adminController.getAllReservations();
+			break;
+		case SCHEDULE:
+			this.schedules = this.adminController.getAllScreeningSchedules();
+			break;
+		case SCREEN:
+			this.screens = this.adminController.getAllScreens();
+			break;
+		case SEAT:
+			this.seats = this.adminController.getAllSeats();
+			break;
+		case TICKET:
 			this.tickets = this.adminController.getAllTickets();
 			break;
 		}

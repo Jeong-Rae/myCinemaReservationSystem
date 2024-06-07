@@ -1,5 +1,7 @@
 import java.util.List;
 
+import com.mysql.cj.x.protobuf.MysqlxCrud.ModifyView;
+
 import core.domain.movie.Movie;
 import core.domain.reservation.PaymentMethodType;
 import core.domain.screeningschedule.ScreeningSchedule;
@@ -190,7 +192,7 @@ class FrameCoordinator implements MovieSearchViewModelDelegate, ScreenViewModelD
 		// TODO Auto-generated method stub
 		ScreenViewModel viewModel = this.diContainer.screenViewDependencies(movie);
 		viewModel.delegate = this;
-		this.screenView = new ScreenView(viewModel);
+		this.screenView = new ScreenView(viewModel, null);
 	}
 
 	@Override
@@ -218,21 +220,16 @@ class FrameCoordinator implements MovieSearchViewModelDelegate, ScreenViewModelD
 	}
 
 	@Override
-	public void updateMovieButtonClicked() {
+	public void updateMovieButtonClicked(long reservationId) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
-	public void updateScheduleButtonClicked() {
+	public void updateScheduleButtonClicked(Movie movie, long reservationId) {
 		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void deleteButtonClicked() {
-		// TODO Auto-generated method stub
-		
+		ScreenViewModel viewModel = this.diContainer.screenViewDependencies(movie);
+		viewModel.delegate = this;
+		this.screenView = new ScreenView(viewModel, null);
 	}
 }
 

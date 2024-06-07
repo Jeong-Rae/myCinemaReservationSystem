@@ -25,6 +25,8 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import com.mysql.cj.conf.LongProperty;
+
 import core.domain.reservation.PaymentMethodType;
 import core.domain.screeningschedule.ScreeningSchedule;
 import feature.seat.SeatRequest;
@@ -338,7 +340,7 @@ public class ScreenView extends JFrame implements ListSelectionListener {
 	private ScreenPanel screen;
 	private SelectedSeatListPanel selectedSeatList;
 	
-	public ScreenView(ScreenViewModel viewModel) {
+	public ScreenView(ScreenViewModel viewModel, Long reservationId) {
 		this.viewModel = viewModel;
 		this.setTitle("좌석 선택");
 		this.setSize(1920, 1080);

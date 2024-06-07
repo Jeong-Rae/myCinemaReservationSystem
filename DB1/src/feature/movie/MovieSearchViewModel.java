@@ -25,6 +25,7 @@ public class MovieSearchViewModel {
 	public String actor = null;
 	public String genre = null;
 	public TicketInfoResponse selectedTicket = null;
+	public ReverationSummary selectedReservation = null;
 	
 	public MovieSearchViewModel(UserController userController) {
 		this.userController = userController;
@@ -71,11 +72,19 @@ public class MovieSearchViewModel {
 	}
 	
 	public void updateMovieButtonClicked() {
-		
+		this.delegate.updateMovieButtonClicked(this.selectedReservation.revervationId());
 	}
 	
 	public void updateScheduleButtonClicked() {
-		
+		Movie ticketMovie = this.userController.searchMovies(
+				new SearchCriteria(
+						this.selectedReservation.movieTitle(), 
+						null, 
+						null, 
+						null)
+				)
+				.get(0);
+		this.delegate.updateScheduleButtonClicked(ticketMovie, this.selectedReservation.revervationId());
 	}
 	
 	public void deleteButtonClicked() {
@@ -187,7 +196,7 @@ public class MovieSearchViewModel {
 	}
 	
 	public void reservationCellSelected(int reservaionRow) {
-		ReverationSummary selectedReservation = this.memberReservations.get(reservaionRow);
+		this.selectedReservation = this.memberReservations.get(reservaionRow);
 		this.reservationTickets = this.userController.getTicketInfoResponses(selectedReservation.revervationId());
 	}
 	
