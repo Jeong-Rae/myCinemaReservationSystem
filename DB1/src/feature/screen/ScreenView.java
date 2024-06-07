@@ -214,11 +214,11 @@ class ScheduleListPanel extends JPanel {
         this.list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         this.list.setCellRenderer(new ScheduleListCellRenderer());
         this.list.setSelectedIndex(0);
-        this.setPreferredSize(new Dimension(200, 1080));
+        this.setPreferredSize(new Dimension(200, 900));
 
         // JScrollPane에 JList 추가
         JScrollPane scrollPane = new JScrollPane(list);
-        scrollPane.setPreferredSize(new Dimension(200, 1080));
+        scrollPane.setPreferredSize(new Dimension(200, 900));
         this.add(scrollPane);
 	}
 }
@@ -343,7 +343,7 @@ public class ScreenView extends JFrame implements ListSelectionListener {
 	public ScreenView(ScreenViewModel viewModel) {
 		this.viewModel = viewModel;
 		this.setTitle("좌석 선택");
-		this.setSize(1920, 1080);
+		this.setSize(1500, 900);
 		this.setLayout(new BorderLayout());
 		
 		JLabel title = new JLabel("예약 하기");

@@ -356,12 +356,14 @@ public class AdminView extends JFrame {
 	
 	public AdminView(AdminViewModel viewModel) {
 		this.viewModel = viewModel;
-		this.setSize(1920, 1080);
+		this.setSize(1500, 900);
 		
 		this.table = new Table(viewModel.membersToTableModel());
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(this.table);
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		this.add(scrollPane, BorderLayout.CENTER);
 		
 		SQLQueryAreaPanel sqlQueryTextAreaPanel = new SQLQueryAreaPanel(this.viewModel, this.table);
