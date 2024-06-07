@@ -30,8 +30,8 @@ public class DatabaseInitializer {
             
             insertMovieExampleSet(stmt);
             insertScreenExampleSet(stmt);
-            insertSeatExampleSet(stmt);
             insertScreeningScheduleExampleSet(stmt);
+            insertSeatExampleSet(stmt); 
             insertUserExampleSet(stmt);
             insertReservationExampleSet(stmt);
             insertTicketExampleSet(stmt);
@@ -51,29 +51,35 @@ public class DatabaseInitializer {
         executeUpdate("CREATE SCHEMA IF NOT EXISTS `db2` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci", stmt);
         executeUpdate("USE `db2`", stmt);
     }
-    
+
     private void createUserAccount(Statement stmt) throws SQLException {
-    	executeUpdate("""
-				DELIMITER $$
-				
-				CREATE PROCEDURE CreateUserIfNeeded()
-				BEGIN
-				    DECLARE userExists INT;
-				    SET userExists = (SELECT COUNT(*) FROM mysql.user WHERE user = 'user1' AND host = 'localhost');
-				
-				    IF userExists = 0 THEN
-				        CREATE USER 'user1'@'localhost' IDENTIFIED BY 'user1';
-				        GRANT SELECT, INSERT, UPDATE, DELETE ON db2.* TO 'user1'@'localhost';
-				        FLUSH PRIVILEGES;
-				    END IF;
-				END$$
-				
-				DELIMITER ;
-				
-				CALL CreateUserIfNeeded();
-				
-				DROP PROCEDURE CreateUserIfNeeded;
-    			""", stmt);
+        // 프로시저 생성 쿼리
+        String createProcedure = """
+            CREATE PROCEDURE CreateUserIfNeeded()
+            BEGIN
+                DECLARE userExists INT;
+                SET userExists = (SELECT COUNT(*) FROM mysql.user WHERE user = 'user1' AND host = 'localhost');
+            
+                IF userExists = 0 THEN
+                    CREATE USER 'user1'@'localhost' IDENTIFIED BY 'user1';
+                    GRANT SELECT, INSERT, UPDATE, DELETE ON db2.* TO 'user1'@'localhost';
+                    FLUSH PRIVILEGES;
+                END IF;
+            END
+        """;
+
+        // 프로시저 호출 쿼리
+        String callProcedure = "CALL CreateUserIfNeeded()";
+
+        // 프로시저 삭제 쿼리
+        String dropProcedure = "DROP PROCEDURE CreateUserIfNeeded";
+
+        // 프로시저 생성
+        stmt.executeUpdate(createProcedure);
+        // 프로시저 호출
+        stmt.executeUpdate(callProcedure);
+        // 프로시저 삭제
+        stmt.executeUpdate(dropProcedure);
     }
 
     private void createMovie(Statement stmt) throws SQLException {
@@ -141,42 +147,42 @@ public class DatabaseInitializer {
     private void createSeat(Statement stmt) throws SQLException {
         executeUpdate("DROP TABLE IF EXISTS `db2`.`seat`", stmt);
         executeUpdate("""
-				CREATE TABLE IF NOT EXISTS `db2`.`seat` (
-				  `seat_id` BIGINT NOT NULL AUTO_INCREMENT,
-				  `is_active` TINYINT NOT NULL DEFAULT 1,
-				  `row_number` INT NOT NULL,
-				  `col_number` INT NOT NULL,
-				  `screen_id` BIGINT NOT NULL,
-				  `screening_schedule_id` BIGINT NOT NULL,
-				  PRIMARY KEY (`seat_id`),
-				  INDEX `fk_seat_cinema1_idx` (`screen_id` ASC) VISIBLE,
-				  INDEX `fk_seat_screening_schedule1_idx` (`screening_schedule_id` ASC) VISIBLE,
-				  CONSTRAINT `fk_seat_cinema1`
-				    FOREIGN KEY (`screen_id`)
-				    REFERENCES `db2`.`screen` (`screen_id`)
-				    ON DELETE NO ACTION
-				    ON UPDATE NO ACTION,
-				  CONSTRAINT `fk_seat_screening_schedule1`
-				    FOREIGN KEY (`screening_schedule_id`)
-				    REFERENCES `db2`.`screening_schedule` (`schedule_id`)
-				    ON DELETE NO ACTION
-				    ON UPDATE NO ACTION)
-				ENGINE = InnoDB;
+                CREATE TABLE IF NOT EXISTS `db2`.`seat` (
+                  `seat_id` BIGINT NOT NULL AUTO_INCREMENT,
+                  `is_active` TINYINT NOT NULL DEFAULT 1,
+                  `row_number` INT NOT NULL,
+                  `col_number` INT NOT NULL,
+                  `screen_id` BIGINT NOT NULL,
+                  `screening_schedule_id` BIGINT NOT NULL,
+                  PRIMARY KEY (`seat_id`),
+                  INDEX `fk_seat_cinema1_idx` (`screen_id` ASC) VISIBLE,
+                  INDEX `fk_seat_screening_schedule1_idx` (`screening_schedule_id` ASC) VISIBLE,
+                  CONSTRAINT `fk_seat_cinema1`
+                    FOREIGN KEY (`screen_id`)
+                    REFERENCES `db2`.`screen` (`screen_id`)
+                    ON DELETE NO ACTION
+                    ON UPDATE NO ACTION,
+                  CONSTRAINT `fk_seat_screening_schedule1`
+                    FOREIGN KEY (`screening_schedule_id`)
+                    REFERENCES `db2`.`screening_schedule` (`schedule_id`)
+                    ON DELETE NO ACTION
+                    ON UPDATE NO ACTION)
+                ENGINE = InnoDB;
             """, stmt);
     }
 
     private void createMember(Statement stmt) throws SQLException {
         executeUpdate("DROP TABLE IF EXISTS `db2`.`member`", stmt);
         executeUpdate("""
-				CREATE TABLE IF NOT EXISTS `db2`.`member` (
-				  `member_id` BIGINT NOT NULL AUTO_INCREMENT,
-				  `name` VARCHAR(32) NOT NULL,
-				  `phone_number` VARCHAR(16) NOT NULL,
-				  `email` VARCHAR(32) NOT NULL,
-				  PRIMARY KEY (`member_id`),
-				  UNIQUE INDEX `phone_number_UNIQUE` (`phone_number` ASC) VISIBLE,
-				  UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE)
-				ENGINE = InnoDB;
+                CREATE TABLE IF NOT EXISTS `db2`.`member` (
+                  `member_id` BIGINT NOT NULL AUTO_INCREMENT,
+                  `name` VARCHAR(32) NOT NULL,
+                  `phone_number` VARCHAR(16) NOT NULL,
+                  `email` VARCHAR(32) NOT NULL,
+                  PRIMARY KEY (`member_id`),
+                  UNIQUE INDEX `phone_number_UNIQUE` (`phone_number` ASC) VISIBLE,
+                  UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE)
+                ENGINE = InnoDB;
             """, stmt);
     }
 
@@ -189,12 +195,12 @@ public class DatabaseInitializer {
                   `payment_status` ENUM("FAILED", "IN_PROGRESS", "COMPLETED") NOT NULL,
                   `amount` INT NOT NULL,
                   `payment_date` DATE NOT NULL,
-                  `user_id` BIGINT NOT NULL,
+                  `member_id` BIGINT NOT NULL,
                   PRIMARY KEY (`reservation_id`),
-                  INDEX `fk_reservation_user1_idx` (`user_id` ASC) VISIBLE,
+                  INDEX `fk_reservation_user1_idx` (`member_id` ASC) VISIBLE,
                   CONSTRAINT `fk_reservation_user1`
-                    FOREIGN KEY (`user_id`)
-                    REFERENCES `db2`.`user` (`user_id`)
+                    FOREIGN KEY (`member_id`)
+                    REFERENCES `db2`.`member` (`member_id`)
                     ON DELETE NO ACTION
                     ON UPDATE NO ACTION
                 ) ENGINE = InnoDB
@@ -281,22 +287,22 @@ public class DatabaseInitializer {
 
     private void insertSeatExampleSet(Statement stmt) throws SQLException {
         executeUpdate("""
-			INSERT INTO seat (is_active, `row_number`, col_number, screen_id, screening_schedule_id) VALUES
-			(1, 1, 1, 1, 1),
-			(1, 1, 1, 2, 2),
-			(1, 1, 1, 3, 3),
-			(1, 1, 1, 4, 4),
-			(1, 2, 1, 1, 5),
-			(1, 2, 1, 2, 6),
-			(1, 2, 1, 3, 7),
-			(1, 2, 1, 4, 8),
-			(1, 3, 1, 1, 9),
-			(1, 3, 1, 2, 10),
-			(1, 3, 1, 3, 11),
-			(1, 3, 1, 4, 12),
-			(1, 1, 1, 1, 13),
-			(1, 1, 1, 2, 14),
-			(1, 1, 1, 3, 15);
+            INSERT INTO seat (is_active, `row_number`, col_number, screen_id, screening_schedule_id) VALUES
+            (1, 1, 1, 1, 1),
+            (1, 1, 1, 2, 2),
+            (1, 1, 1, 3, 3),
+            (1, 1, 1, 4, 4),
+            (1, 2, 1, 1, 5),
+            (1, 2, 1, 2, 6),
+            (1, 2, 1, 3, 7),
+            (1, 2, 1, 4, 8),
+            (1, 3, 1, 1, 9),
+            (1, 3, 1, 2, 10),
+            (1, 3, 1, 3, 11),
+            (1, 3, 1, 4, 12),
+            (1, 1, 1, 1, 13),
+            (1, 1, 1, 2, 14),
+            (1, 1, 1, 3, 15);
         """, stmt);
     }
 
@@ -304,128 +310,128 @@ public class DatabaseInitializer {
         executeUpdate("""
             INSERT INTO screening_schedule (movie_id, screen_id, start_date, day_of_week, session_number, start_time) VALUES
             -- 2024-05-01 (수요일)
-			(1, 1, '2024-05-01', 'WED', 1, '10:00:00'),
-			(2, 2, '2024-05-01', 'WED', 1, '11:00:00'),
-			(3, 3, '2024-05-01', 'WED', 1, '12:00:00'),
-			(4, 4, '2024-05-01', 'WED', 1, '13:00:00'),
-			(5, 1, '2024-05-01', 'WED', 2, '14:00:00'),
-			(6, 2, '2024-05-01', 'WED', 2, '15:00:00'),
-			(7, 3, '2024-05-01', 'WED', 2, '16:00:00'),
-			(8, 4, '2024-05-01', 'WED', 2, '17:00:00'),
-			(9, 1, '2024-05-01', 'WED', 3, '18:00:00'),
-			(10, 2, '2024-05-01', 'WED', 3, '19:00:00'),
-			(11, 3, '2024-05-01', 'WED', 3, '20:00:00'),
-			(12, 4, '2024-05-01', 'WED', 3, '21:00:00'),
-			
-			-- 2024-05-02 (목요일)
-			(13, 1, '2024-05-02', 'THU', 1, '10:00:00'),
-			(14, 2, '2024-05-02', 'THU', 1, '11:00:00'),
-			(15, 3, '2024-05-02', 'THU', 1, '12:00:00'),
-			(1, 4, '2024-05-02', 'THU', 1, '13:00:00'),
-			(2, 1, '2024-05-02', 'THU', 2, '14:00:00'),
-			(3, 2, '2024-05-02', 'THU', 2, '15:00:00'),
-			(4, 3, '2024-05-02', 'THU', 2, '16:00:00'),
-			(5, 4, '2024-05-02', 'THU', 2, '17:00:00'),
-			(6, 1, '2024-05-02', 'THU', 3, '18:00:00'),
-			(7, 2, '2024-05-02', 'THU', 3, '19:00:00'),
-			(8, 3, '2024-05-02', 'THU', 3, '20:00:00'),
-			(9, 4, '2024-05-02', 'THU', 3, '21:00:00'),
-			
-			-- 2024-05-03 (금요일)
-			(10, 1, '2024-05-03', 'FRI', 1, '10:00:00'),
-			(11, 2, '2024-05-03', 'FRI', 1, '11:00:00'),
-			(12, 3, '2024-05-03', 'FRI', 1, '12:00:00'),
-			(13, 4, '2024-05-03', 'FRI', 1, '13:00:00'),
-			(14, 1, '2024-05-03', 'FRI', 2, '14:00:00'),
-			(15, 2, '2024-05-03', 'FRI', 2, '15:00:00'),
-			(1, 3, '2024-05-03', 'FRI', 2, '16:00:00'),
-			(2, 4, '2024-05-03', 'FRI', 2, '17:00:00'),
-			(3, 1, '2024-05-03', 'FRI', 3, '18:00:00'),
-			(4, 2, '2024-05-03', 'FRI', 3, '19:00:00'),
-			(5, 3, '2024-05-03', 'FRI', 3, '20:00:00'),
-			(6, 4, '2024-05-03', 'FRI', 3, '21:00:00'),
-			
-			-- 2024-05-04 (토요일)
-			(7, 1, '2024-05-04', 'SAT', 1, '10:00:00'),
-			(8, 2, '2024-05-04', 'SAT', 1, '11:00:00'),
-			(9, 3, '2024-05-04', 'SAT', 1, '12:00:00'),
-			(10, 4, '2024-05-04', 'SAT', 1, '13:00:00'),
-			(11, 1, '2024-05-04', 'SAT', 2, '14:00:00'),
-			(12, 2, '2024-05-04', 'SAT', 2, '15:00:00'),
-			(13, 3, '2024-05-04', 'SAT', 2, '16:00:00'),
-			(14, 4, '2024-05-04', 'SAT', 2, '17:00:00'),
-			(15, 1, '2024-05-04', 'SAT', 3, '18:00:00'),
-			(1, 2, '2024-05-04', 'SAT', 3, '19:00:00'),
-			(2, 3, '2024-05-04', 'SAT', 3, '20:00:00'),
-			(3, 4, '2024-05-04', 'SAT', 3, '21:00:00'),
-			
-			-- 2024-05-05 (일요일)
-			(4, 1, '2024-05-05', 'SUN', 1, '10:00:00'),
-			(5, 2, '2024-05-05', 'SUN', 1, '11:00:00'),
-			(6, 3, '2024-05-05', 'SUN', 1, '12:00:00'),
-			(7, 4, '2024-05-05', 'SUN', 1, '13:00:00'),
-			(8, 1, '2024-05-05', 'SUN', 2, '14:00:00'),
-			(9, 2, '2024-05-05', 'SUN', 2, '15:00:00'),
-			(10, 3, '2024-05-05', 'SUN', 2, '16:00:00'),
-			(11, 4, '2024-05-05', 'SUN', 2, '17:00:00'),
-			(12, 1, '2024-05-05', 'SUN', 3, '18:00:00'),
-			(13, 2, '2024-05-05', 'SUN', 3, '19:00:00'),
-			(14, 3, '2024-05-05', 'SUN', 3, '20:00:00'),
-			(15, 4, '2024-05-05', 'SUN', 3, '21:00:00'),
-			
-			-- 2024-05-06 (월요일)
-			(1, 1, '2024-05-06', 'MON', 1, '10:00:00'),
-			(2, 2, '2024-05-06', 'MON', 1, '11:00:00'),
-			(3, 3, '2024-05-06', 'MON', 1, '12:00:00'),
-			(4, 4, '2024-05-06', 'MON', 1, '13:00:00'),
-			(5, 1, '2024-05-06', 'MON', 2, '14:00:00'),
-			(6, 2, '2024-05-06', 'MON', 2, '15:00:00'),
-			(7, 3, '2024-05-06', 'MON', 2, '16:00:00'),
-			(8, 4, '2024-05-06', 'MON', 2, '17:00:00'),
-			(9, 1, '2024-05-06', 'MON', 3, '18:00:00'),
-			(10, 2, '2024-05-06', 'MON', 3, '19:00:00'),
-			(11, 3, '2024-05-06', 'MON', 3, '20:00:00'),
-			(12, 4, '2024-05-06', 'MON', 3, '21:00:00'),
-			
-			-- 2024-05-07 (화요일)
-			(13, 1, '2024-05-07', 'TUE', 1, '10:00:00'),
-			(14, 2, '2024-05-07', 'TUE', 1, '11:00:00'),
-			(15, 3, '2024-05-07', 'TUE', 1, '12:00:00'),
-			(1, 4, '2024-05-07', 'TUE', 1, '13:00:00'),
-			(2, 1, '2024-05-07', 'TUE', 2, '14:00:00'),
-			(3, 2, '2024-05-07', 'TUE', 2, '15:00:00'),
-			(4, 3, '2024-05-07', 'TUE', 2, '16:00:00'),
-			(5, 4, '2024-05-07', 'TUE', 2, '17:00:00'),
-			(6, 1, '2024-05-07', 'TUE', 3, '18:00:00'),
-			(7, 2, '2024-05-07', 'TUE', 3, '19:00:00'),
-			(8, 3, '2024-05-07', 'TUE', 3, '20:00:00'),
-			(9, 4, '2024-05-07', 'TUE', 3, '21:00:00');
+            (1, 1, '2024-05-01', 'WED', 1, '10:00:00'),
+            (2, 2, '2024-05-01', 'WED', 1, '11:00:00'),
+            (3, 3, '2024-05-01', 'WED', 1, '12:00:00'),
+            (4, 4, '2024-05-01', 'WED', 1, '13:00:00'),
+            (5, 1, '2024-05-01', 'WED', 2, '14:00:00'),
+            (6, 2, '2024-05-01', 'WED', 2, '15:00:00'),
+            (7, 3, '2024-05-01', 'WED', 2, '16:00:00'),
+            (8, 4, '2024-05-01', 'WED', 2, '17:00:00'),
+            (9, 1, '2024-05-01', 'WED', 3, '18:00:00'),
+            (10, 2, '2024-05-01', 'WED', 3, '19:00:00'),
+            (11, 3, '2024-05-01', 'WED', 3, '20:00:00'),
+            (12, 4, '2024-05-01', 'WED', 3, '21:00:00'),
+            
+            -- 2024-05-02 (목요일)
+            (13, 1, '2024-05-02', 'THU', 1, '10:00:00'),
+            (14, 2, '2024-05-02', 'THU', 1, '11:00:00'),
+            (15, 3, '2024-05-02', 'THU', 1, '12:00:00'),
+            (1, 4, '2024-05-02', 'THU', 1, '13:00:00'),
+            (2, 1, '2024-05-02', 'THU', 2, '14:00:00'),
+            (3, 2, '2024-05-02', 'THU', 2, '15:00:00'),
+            (4, 3, '2024-05-02', 'THU', 2, '16:00:00'),
+            (5, 4, '2024-05-02', 'THU', 2, '17:00:00'),
+            (6, 1, '2024-05-02', 'THU', 3, '18:00:00'),
+            (7, 2, '2024-05-02', 'THU', 3, '19:00:00'),
+            (8, 3, '2024-05-02', 'THU', 3, '20:00:00'),
+            (9, 4, '2024-05-02', 'THU', 3, '21:00:00'),
+            
+            -- 2024-05-03 (금요일)
+            (10, 1, '2024-05-03', 'FRI', 1, '10:00:00'),
+            (11, 2, '2024-05-03', 'FRI', 1, '11:00:00'),
+            (12, 3, '2024-05-03', 'FRI', 1, '12:00:00'),
+            (13, 4, '2024-05-03', 'FRI', 1, '13:00:00'),
+            (14, 1, '2024-05-03', 'FRI', 2, '14:00:00'),
+            (15, 2, '2024-05-03', 'FRI', 2, '15:00:00'),
+            (1, 3, '2024-05-03', 'FRI', 2, '16:00:00'),
+            (2, 4, '2024-05-03', 'FRI', 2, '17:00:00'),
+            (3, 1, '2024-05-03', 'FRI', 3, '18:00:00'),
+            (4, 2, '2024-05-03', 'FRI', 3, '19:00:00'),
+            (5, 3, '2024-05-03', 'FRI', 3, '20:00:00'),
+            (6, 4, '2024-05-03', 'FRI', 3, '21:00:00'),
+            
+            -- 2024-05-04 (토요일)
+            (7, 1, '2024-05-04', 'SAT', 1, '10:00:00'),
+            (8, 2, '2024-05-04', 'SAT', 1, '11:00:00'),
+            (9, 3, '2024-05-04', 'SAT', 1, '12:00:00'),
+            (10, 4, '2024-05-04', 'SAT', 1, '13:00:00'),
+            (11, 1, '2024-05-04', 'SAT', 2, '14:00:00'),
+            (12, 2, '2024-05-04', 'SAT', 2, '15:00:00'),
+            (13, 3, '2024-05-04', 'SAT', 2, '16:00:00'),
+            (14, 4, '2024-05-04', 'SAT', 2, '17:00:00'),
+            (15, 1, '2024-05-04', 'SAT', 3, '18:00:00'),
+            (1, 2, '2024-05-04', 'SAT', 3, '19:00:00'),
+            (2, 3, '2024-05-04', 'SAT', 3, '20:00:00'),
+            (3, 4, '2024-05-04', 'SAT', 3, '21:00:00'),
+            
+            -- 2024-05-05 (일요일)
+            (4, 1, '2024-05-05', 'SUN', 1, '10:00:00'),
+            (5, 2, '2024-05-05', 'SUN', 1, '11:00:00'),
+            (6, 3, '2024-05-05', 'SUN', 1, '12:00:00'),
+            (7, 4, '2024-05-05', 'SUN', 1, '13:00:00'),
+            (8, 1, '2024-05-05', 'SUN', 2, '14:00:00'),
+            (9, 2, '2024-05-05', 'SUN', 2, '15:00:00'),
+            (10, 3, '2024-05-05', 'SUN', 2, '16:00:00'),
+            (11, 4, '2024-05-05', 'SUN', 2, '17:00:00'),
+            (12, 1, '2024-05-05', 'SUN', 3, '18:00:00'),
+            (13, 2, '2024-05-05', 'SUN', 3, '19:00:00'),
+            (14, 3, '2024-05-05', 'SUN', 3, '20:00:00'),
+            (15, 4, '2024-05-05', 'SUN', 3, '21:00:00'),
+            
+            -- 2024-05-06 (월요일)
+            (1, 1, '2024-05-06', 'MON', 1, '10:00:00'),
+            (2, 2, '2024-05-06', 'MON', 1, '11:00:00'),
+            (3, 3, '2024-05-06', 'MON', 1, '12:00:00'),
+            (4, 4, '2024-05-06', 'MON', 1, '13:00:00'),
+            (5, 1, '2024-05-06', 'MON', 2, '14:00:00'),
+            (6, 2, '2024-05-06', 'MON', 2, '15:00:00'),
+            (7, 3, '2024-05-06', 'MON', 2, '16:00:00'),
+            (8, 4, '2024-05-06', 'MON', 2, '17:00:00'),
+            (9, 1, '2024-05-06', 'MON', 3, '18:00:00'),
+            (10, 2, '2024-05-06', 'MON', 3, '19:00:00'),
+            (11, 3, '2024-05-06', 'MON', 3, '20:00:00'),
+            (12, 4, '2024-05-06', 'MON', 3, '21:00:00'),
+            
+            -- 2024-05-07 (화요일)
+            (13, 1, '2024-05-07', 'TUE', 1, '10:00:00'),
+            (14, 2, '2024-05-07', 'TUE', 1, '11:00:00'),
+            (15, 3, '2024-05-07', 'TUE', 1, '12:00:00'),
+            (1, 4, '2024-05-07', 'TUE', 1, '13:00:00'),
+            (2, 1, '2024-05-07', 'TUE', 2, '14:00:00'),
+            (3, 2, '2024-05-07', 'TUE', 2, '15:00:00'),
+            (4, 3, '2024-05-07', 'TUE', 2, '16:00:00'),
+            (5, 4, '2024-05-07', 'TUE', 2, '17:00:00'),
+            (6, 1, '2024-05-07', 'TUE', 3, '18:00:00'),
+            (7, 2, '2024-05-07', 'TUE', 3, '19:00:00'),
+            (8, 3, '2024-05-07', 'TUE', 3, '20:00:00'),
+            (9, 4, '2024-05-07', 'TUE', 3, '21:00:00');
         """, stmt);
     }
 
     private void insertUserExampleSet(Statement stmt) throws SQLException {
         executeUpdate("""
             INSERT INTO member (`name`, phone_number, email) VALUES
-			('김정래', '010-9976-3892', 'kjr@google.com'),
-			('김도형', '010-1234-0000', 'kdh@google.com'), 
-			('이지우', '010-5678-1111', 'ljw@google.com'), 
-			('박서윤', '010-9012-2222', 'bsy@google.com'),
-			('최민준', '010-1234-3333', 'cmj@google.com'),
-			('이서준', '010-5678-4444', 'lsj@google.com'), 
-			('정서연', '010-9012-5555', 'jsy@google.com'), 
-			('조도윤', '010-1234-6666', 'jdy@google.com'), 
-			('강하윤', '010-5678-7777', 'khy@google.com'),
-			('윤시우', '010-9012-8888', 'ysw@google.com'),
-			('임민서', '010-1234-9999', 'lms@google.com'), 
-			('장연우', '010-5678-0000', 'jyw@google.com'), 
-			('김서형', '010-9012-1111', 'ksh@google.com'),
-			('최주원', '010-1234-2222', 'cjw@google.com'); 
+            ('김정래', '010-9976-3892', 'kjr@google.com'),
+            ('김도형', '010-1234-0000', 'kdh@google.com'), 
+            ('이지우', '010-5678-1111', 'ljw@google.com'), 
+            ('박서윤', '010-9012-2222', 'bsy@google.com'),
+            ('최민준', '010-1234-3333', 'cmj@google.com'),
+            ('이서준', '010-5678-4444', 'lsj@google.com'), 
+            ('정서연', '010-9012-5555', 'jsy@google.com'), 
+            ('조도윤', '010-1234-6666', 'jdy@google.com'), 
+            ('강하윤', '010-5678-7777', 'khy@google.com'),
+            ('윤시우', '010-9012-8888', 'ysw@google.com'),
+            ('임민서', '010-1234-9999', 'lms@google.com'), 
+            ('장연우', '010-5678-0000', 'jyw@google.com'), 
+            ('김서형', '010-9012-1111', 'ksh@google.com'),
+            ('최주원', '010-1234-2222', 'cjw@google.com'); 
         """, stmt);
     }
 
     private void insertReservationExampleSet(Statement stmt) throws SQLException {
         executeUpdate("""
-            INSERT INTO reservation (payment_method, payment_status, amount, payment_date, user_id) VALUES
+            INSERT INTO reservation (payment_method, payment_status, amount, payment_date, member_id) VALUES
             ('CARD', 'COMPLETED', 12000, '2024-05-01', 1),
             ('CASH', 'COMPLETED', 12000, '2024-05-01', 2),
             ('GIFTCON', 'COMPLETED', 10000, '2024-05-01', 3),
@@ -446,22 +452,22 @@ public class DatabaseInitializer {
 
     private void insertTicketExampleSet(Statement stmt) throws SQLException {
         executeUpdate("""
-			INSERT INTO ticket (screening_schedule_id, screen_id, seat_id, reservation_id, is_issued, standard_price, sale_price) VALUES
-			(1, 1, 1, 1, 0, 12000, 12000),
-			(2, 2, 2, 2, 0, 12000, 12000),
-			(3, 3, 3, 3, 0, 12000, 10000),
-			(4, 4, 4, 4, 0, 12000, 12000),
-			(5, 1, 5, 5, 0, 12000, 12000),
-			(6, 2, 6, 6, 0, 12000, 12000),
-			(7, 3, 7, 7, 0, 12000, 10000),
-			(8, 4, 8, 8, 0, 12000, 12000),
-			(9, 1, 9, 9, 0, 12000, 12000),
-			(10, 2, 10, 10, 0, 12000, 12000),
-			(11, 3, 11, 11, 0, 12000, 10000),
-			(12, 4, 12, 12, 0, 12000, 12000),
-			(13, 1, 13, 13, 0, 12000, 12000),
-			(14, 2, 14, 14, 0, 12000, 12000),
-			(15, 3, 15, 15, 0, 12000, 10000);
+            INSERT INTO ticket (screening_schedule_id, screen_id, seat_id, reservation_id, is_issued, standard_price, sale_price) VALUES
+            (1, 1, 1, 1, 0, 12000, 12000),
+            (2, 2, 2, 2, 0, 12000, 12000),
+            (3, 3, 3, 3, 0, 12000, 10000),
+            (4, 4, 4, 4, 0, 12000, 12000),
+            (5, 1, 5, 5, 0, 12000, 12000),
+            (6, 2, 6, 6, 0, 12000, 12000),
+            (7, 3, 7, 7, 0, 12000, 10000),
+            (8, 4, 8, 8, 0, 12000, 12000),
+            (9, 1, 9, 9, 0, 12000, 12000),
+            (10, 2, 10, 10, 0, 12000, 12000),
+            (11, 3, 11, 11, 0, 12000, 10000),
+            (12, 4, 12, 12, 0, 12000, 12000),
+            (13, 1, 13, 13, 0, 12000, 12000),
+            (14, 2, 14, 14, 0, 12000, 12000),
+            (15, 3, 15, 15, 0, 12000, 10000);
         """, stmt);
     }
 

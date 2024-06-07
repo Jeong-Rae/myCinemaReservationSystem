@@ -1,7 +1,5 @@
 import java.util.List;
 
-import com.mysql.cj.x.protobuf.MysqlxCrud.ModifyView;
-
 import core.domain.movie.Movie;
 import core.domain.reservation.PaymentMethodType;
 import core.domain.screeningschedule.ScreeningSchedule;
