@@ -142,14 +142,13 @@ class DIContainer {
         List<ReverationSummary> reverationSummaries = userController.getReservationSummary(userController.getMember());
         System.out.println(reverationSummaries);
         
-        List<TicketInfoResponse> ticketInfoResponses = userController.getTicketInfoResponses(1L);
+        List<TicketInfoResponse> ticketInfoResponses = userController.getTicketInfoResponses(reverationSummaries.get(0).revervationId());
         System.out.println(ticketInfoResponses);
         
 	}
 	
 	public ScreenViewModel screenViewDependencies(Movie movie) {
 		this.screenViewDependencies = new ScreenViewModel(movie, this.userController);
-		
 		return this.screenViewDependencies;
 	}
 }
@@ -180,6 +179,7 @@ class FrameCoordinator implements MovieSearchViewModelDelegate, ScreenViewModelD
 	public void reservationButtonReleased() {
 		// TODO Auto-generated method stub
 		this.screenView.dispose();
+		this.movieSearchView.updateReservationList();
 	}
 
 	@Override
@@ -197,6 +197,24 @@ class FrameCoordinator implements MovieSearchViewModelDelegate, ScreenViewModelD
 		movieSearchViewModel.delegate = this;
 		this.movieSearchView = new MovieSearchView(movieSearchViewModel);
 		this.authView.dispose();
+	}
+
+	@Override
+	public void updateMovieButtonClicked() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateScheduleButtonClicked() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteButtonClicked() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 

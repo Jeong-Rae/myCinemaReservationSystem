@@ -141,7 +141,7 @@ class SelectedSeatListPanel extends JPanel {
 	public SelectedSeatListPanel(ScreenViewModel viewModel) {
 		this.viewModel = viewModel;
 		this.setLayout(new BorderLayout());
-		this.title = new JLabel("선택 좌석", JLabel.LEADING);
+		this.title = new JLabel("[" + this.viewModel.screen.getName() + "]" + " 선택 좌석", JLabel.LEADING);
 		this.title.setFont(new Font(null, Font.BOLD, 32));
 		this.title.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
 		this.add(this.title, BorderLayout.NORTH);
@@ -168,6 +168,7 @@ class SelectedSeatListPanel extends JPanel {
 		this.remove(this.reservation);
 		this.reservation = new ReservationPanel(viewModel);
         this.add(reservation, BorderLayout.SOUTH);
+        this.title.setText("[" + this.viewModel.screen.getName() + "]" + " 선택 좌석");
 	}
 }
 

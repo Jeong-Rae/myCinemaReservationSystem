@@ -7,19 +7,24 @@ import core.domain.member.Member;
 import core.domain.movie.Movie;
 import core.domain.reservation.Reservation;
 import core.domain.ticket.Ticket;
+import core.domain.ticket.TicketInfoResponse;
+import feature.reservation.ReverationSummary;
+import feature.screen.ScreenViewModel;
+import feature.screen.ScreenViewModelDelegate;
 import feature.user.UserController;
 
 public class MovieSearchViewModel {
 	private final UserController userController;
 	public MovieSearchViewModelDelegate delegate;
 	public List<Movie> movies;
-	public List<Reservation> memberReservations;
-	public List<Ticket> reservationTickets;
+	public List<ReverationSummary> memberReservations;
+	public List<TicketInfoResponse> reservationTickets;
 	public Member member;
 	public String title = null;
 	public String director = null;
 	public String actor = null;
 	public String genre = null;
+	public TicketInfoResponse selectedTicket = null;
 	
 	public MovieSearchViewModel(UserController userController) {
 		this.userController = userController;
@@ -32,8 +37,8 @@ public class MovieSearchViewModel {
 			)
 		);
 		this.member = this.userController.getMember();
-		this.memberReservations = this.userController.getReservationsByMemberId(this.member.getMemberId());
-		this.reservationTickets = this.userController.getTicketsByReservationId(this.memberReservations.get(0).getReservationId());
+		this.memberReservations = this.userController.getReservationSummary(member);
+		this.reservationTickets = this.userController.getTicketInfoResponses(this.memberReservations.get(0).revervationId());
 	}
 	
 	public void titleTextFieldKeyReleased(String title) {
@@ -63,6 +68,26 @@ public class MovieSearchViewModel {
 	
 	public void movieTableCellTapped(Movie movie) {
 		delegate.movieTableCellTapped(movie);
+	}
+	
+	public void updateMovieButtonClicked() {
+		
+	}
+	
+	public void updateScheduleButtonClicked() {
+		
+	}
+	
+	public void deleteButtonClicked() {
+		
+	}
+	
+	public void ticketTableCellClicked(int rowNumber) {
+		if (rowNumber == -1) {
+			this.selectedTicket = null;
+		} else {
+			this.selectedTicket = this.reservationTickets.get(rowNumber);
+		}
 	}
 	
 	public DefaultTableModel moviesToTableModel() {
@@ -104,11 +129,10 @@ public class MovieSearchViewModel {
 	
 	public DefaultTableModel reservationsToTableModel() {
 		String[] columns = {
-			"예약번호",
-			"결제방법",
-			"결제상태",
-			"결제금액",
-			"예약일자"
+			"영화명",
+			"상영일자",
+			"상영시간",
+			"결제금액"
 		};
 		
 		DefaultTableModel tableModel = new DefaultTableModel(columns, 0) {
@@ -120,11 +144,11 @@ public class MovieSearchViewModel {
 		
 		this.memberReservations.forEach(reservation -> 
 			tableModel.addRow(new Object[] {
-					String.valueOf(reservation.getReservationId()),
-					reservation.getPaymentMethod().getDescription(),
-					reservation.getPaymentStatus().getDescription(),
-					String.valueOf(reservation.getAmount()),
-					reservation.getPaymentDate().toString()
+					String.valueOf(reservation.revervationId()),
+					reservation.movieTitle(),
+					reservation.startDate().toString(),
+					reservation.endDate(),
+					reservation.amount()
 				})
 		);
 		
@@ -134,9 +158,10 @@ public class MovieSearchViewModel {
 	public DefaultTableModel ticketsToTableModel() {
 		String[] columns = {
 				"영화명",
-				"판매가격",
 				"상영일자",
-				"상영관번호",
+				"상영시간",
+				"상영관",
+				"판매가격",
 				"좌석번호"
 			};
 			
@@ -149,19 +174,12 @@ public class MovieSearchViewModel {
 			
 			this.reservationTickets.forEach(ticket -> 
 				tableModel.addRow(new Object[] {
-						this.userController
-							.getMovieByScreeningSchedule(
-									this.userController
-										.getScreeningScheduleById(ticket.getScreeningScheduleId())
-						)
-						.getTitle(),
-						String.valueOf(ticket.getSalePrice()),
-						this.userController
-							.getScreeningScheduleById(ticket.getScreeningScheduleId())
-							.getStartDate()
-							.toString(),
-						String.valueOf(ticket.getScreenId()),
-						String.valueOf(ticket.getSeatId())
+						ticket.movieTitle(),
+						ticket.startDate().toString(),
+						ticket.startTime(),
+						ticket.screenName(),
+						ticket.salePrice(),
+						"행" + ticket.seatRow() + "열" + ticket.seatCol()
 					})
 			);
 			
@@ -169,8 +187,8 @@ public class MovieSearchViewModel {
 	}
 	
 	public void reservationCellSelected(int reservaionRow) {
-		Reservation selectedReservation = this.memberReservations.get(reservaionRow);
-		this.reservationTickets = this.userController.getTicketsByReservationId(selectedReservation.getReservationId());
+		ReverationSummary selectedReservation = this.memberReservations.get(reservaionRow);
+		this.reservationTickets = this.userController.getTicketInfoResponses(selectedReservation.revervationId());
 	}
 	
 	private void updateMoviesByCriteria() {
@@ -181,5 +199,11 @@ public class MovieSearchViewModel {
 				this.director, 
 				this.actor, 
 				this.genre));
+	}
+
+	public void updateReservations() {
+		// TODO Auto-generated method stub
+		this.memberReservations = this.userController.getReservationSummary(member);
+		this.reservationTickets = this.userController.getTicketInfoResponses(this.memberReservations.get(0).revervationId());
 	}
 }
