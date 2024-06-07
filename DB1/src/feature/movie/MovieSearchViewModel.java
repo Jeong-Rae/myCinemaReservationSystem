@@ -7,6 +7,8 @@ import core.domain.member.Member;
 import core.domain.movie.Movie;
 import core.domain.reservation.Reservation;
 import core.domain.ticket.Ticket;
+import feature.screen.ScreenViewModel;
+import feature.screen.ScreenViewModelDelegate;
 import feature.user.UserController;
 
 public class MovieSearchViewModel {
@@ -20,6 +22,7 @@ public class MovieSearchViewModel {
 	public String director = null;
 	public String actor = null;
 	public String genre = null;
+	public Ticket selectedTicket = null;
 	
 	public MovieSearchViewModel(UserController userController) {
 		this.userController = userController;
@@ -63,6 +66,26 @@ public class MovieSearchViewModel {
 	
 	public void movieTableCellTapped(Movie movie) {
 		delegate.movieTableCellTapped(movie);
+	}
+	
+	public void updateMovieButtonClicked() {
+		
+	}
+	
+	public void updateScheduleButtonClicked() {
+		
+	}
+	
+	public void deleteButtonClicked() {
+		
+	}
+	
+	public void ticketTableCellClicked(int rowNumber) {
+		if (rowNumber == -1) {
+			this.selectedTicket = null;
+		} else {
+			this.selectedTicket = this.reservationTickets.get(rowNumber);
+		}
 	}
 	
 	public DefaultTableModel moviesToTableModel() {
@@ -181,5 +204,11 @@ public class MovieSearchViewModel {
 				this.director, 
 				this.actor, 
 				this.genre));
+	}
+
+	public void updateReservations() {
+		// TODO Auto-generated method stub
+		this.memberReservations = this.userController.getReservationsByMemberId(this.member.getMemberId());
+		this.reservationTickets = this.userController.getTicketsByReservationId(this.memberReservations.get(0).getReservationId());
 	}
 }

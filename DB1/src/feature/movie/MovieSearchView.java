@@ -6,12 +6,16 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -24,6 +28,72 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 
 import core.domain.reservation.Reservation;
+import core.domain.ticket.Ticket;
+
+class TicketButtonsPanel extends JPanel implements ListSelectionListener {
+	private MovieSearchViewModel viewModel;
+	private JButton updateMovieButton;
+	private JButton updateScheduleButton;
+	private JButton deleteButton;
+	private TicketTable table;
+	
+	TicketButtonsPanel(MovieSearchViewModel viewModel, TicketTable table) {
+		this.viewModel = viewModel;
+		this.table = table;
+		this.table.getSelectionModel().addListSelectionListener(this);
+		
+		this.updateMovieButton = new JButton("영화 변경");
+		this.updateMovieButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if (viewModel.selectedTicket == null) {
+					JOptionPane.showMessageDialog(updateMovieButton, "티켓을 선택해 주세요!", "Information", JOptionPane.INFORMATION_MESSAGE);
+				} else {
+					viewModel.updateMovieButtonClicked();
+				}
+			}
+		});
+		this.add(updateMovieButton);
+		
+		this.updateScheduleButton = new JButton("일정 변경");
+		this.updateScheduleButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if (viewModel.selectedTicket == null) {
+					JOptionPane.showMessageDialog(updateScheduleButton, "티켓을 선택해 주세요!", "Information", JOptionPane.INFORMATION_MESSAGE);
+				} else {
+					viewModel.updateScheduleButtonClicked();
+				}
+			}
+		});
+		this.add(updateScheduleButton);
+		
+		this.deleteButton = new JButton("티켓 삭제");
+		this.deleteButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if (viewModel.selectedTicket == null) {
+					JOptionPane.showMessageDialog(deleteButton, "티켓을 선택해 주세요!", "Information", JOptionPane.INFORMATION_MESSAGE);
+				} else {
+					viewModel.deleteButtonClicked();
+				}
+			}
+		});
+		this.add(this.deleteButton);
+	}
+
+	@Override
+	public void valueChanged(ListSelectionEvent e) {
+		// TODO Auto-generated method stub
+		this.viewModel.ticketTableCellClicked(this.table.getSelectedRow());
+	}
+}
 
 class ReservationTableHeaderRenderer extends DefaultTableCellRenderer {
 	@Override
@@ -90,26 +160,48 @@ class ReservationListPanel extends JPanel implements ListSelectionListener {
 	
 	ReservationListPanel(MovieSearchViewModel viewModel) {
 		this.viewModel = viewModel;
-		this.setLayout(new BorderLayout());
+		this.setLayout(new BorderLayout(20, 20));
+		
+		JPanel reservationPanel = new JPanel();
+		reservationPanel.setLayout(new BorderLayout());
+		JLabel reservationLabel = new JLabel("예약정보");
+		reservationLabel.setFont(new Font(null, Font.PLAIN, 16));
+		reservationPanel.add(reservationLabel, BorderLayout.NORTH);
 		
 		this.reservationTable = new ReservationTable(this.viewModel);
 		this.reservationTable.getSelectionModel().addListSelectionListener(this);
 		
 		JScrollPane reservationTableScrollPane = new JScrollPane();
 		reservationTableScrollPane.setViewportView(this.reservationTable);
-		this.add(reservationTableScrollPane, BorderLayout.NORTH);
+		reservationPanel.add(reservationTableScrollPane, BorderLayout.CENTER);
+		this.add(reservationPanel, BorderLayout.NORTH);
+		
+		JPanel ticketPanel = new JPanel();
+		ticketPanel.setLayout(new BorderLayout());
+		JLabel ticketLabel = new JLabel("티켓정보");
+		ticketLabel.setFont(new Font(null, Font.PLAIN, 16));
+		ticketPanel.add(ticketLabel, BorderLayout.NORTH);
 		
 		this.tickeTable = new TicketTable(this.viewModel);
 		
 		JScrollPane tickeTableScrollPane = new JScrollPane();
 		tickeTableScrollPane.setViewportView(this.tickeTable);
-		this.add(tickeTableScrollPane, BorderLayout.CENTER);
+		ticketPanel.add(tickeTableScrollPane, BorderLayout.CENTER);
+		this.add(ticketPanel, BorderLayout.CENTER);
+		
+		TicketButtonsPanel buttonsPanel = new TicketButtonsPanel(this.viewModel, this.tickeTable);
+		this.add(buttonsPanel, BorderLayout.SOUTH);
 	}
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		// TODO Auto-generated method stub
 		this.viewModel.reservationCellSelected(this.reservationTable.getSelectedRow());
+		this.tickeTable.setModel(this.viewModel.ticketsToTableModel());
+	}
+	
+	public void updateTable() {
+		this.reservationTable.setModel(this.viewModel.reservationsToTableModel());
 		this.tickeTable.setModel(this.viewModel.ticketsToTableModel());
 	}
 }
@@ -295,12 +387,13 @@ class MovieSearchTitlePanel extends JPanel {
 public class MovieSearchView extends JFrame implements ListSelectionListener {
 	private final MovieSearchViewModel viewModel;
 	private MovieTable table;
+	private ReservationListPanel reservationListPanel;
 	
 	public MovieSearchView(MovieSearchViewModel viewModel) {
 		this.setTitle("영화관 예약 시스템");
 		this.setSize(1920, 1080);
 		this.viewModel = viewModel;
-		this.setLayout(new BorderLayout());
+		this.setLayout(new BorderLayout(20, 20));
 		
 		this.table = new MovieTable(viewModel.moviesToTableModel());
 		this.table.getSelectionModel().addListSelectionListener(this);
@@ -311,7 +404,8 @@ public class MovieSearchView extends JFrame implements ListSelectionListener {
 		
 		this.add(new MovieSearchTitlePanel(this.viewModel, this.table), BorderLayout.NORTH);
 		
-		this.add(new ReservationListPanel(this.viewModel), BorderLayout.EAST);
+		this.reservationListPanel = new ReservationListPanel(this.viewModel);
+		this.add(this.reservationListPanel, BorderLayout.EAST);
 		
 		this.setVisible(true);
 		this.setDefaultCloseOperation(this.EXIT_ON_CLOSE);
@@ -323,5 +417,10 @@ public class MovieSearchView extends JFrame implements ListSelectionListener {
 			System.out.println("selected :" + this.viewModel.movies.get(table.getSelectedRow()));
 			viewModel.movieTableCellTapped(this.viewModel.movies.get(table.getSelectedRow()));
 		}
+	}
+	
+	public void updateReservationList() {
+		this.viewModel.updateReservations();
+		this.reservationListPanel.updateTable();
 	}
 }
