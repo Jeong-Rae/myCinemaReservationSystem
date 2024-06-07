@@ -228,6 +228,7 @@ public class MovieSearchViewModel {
 	public void updateReservations() {
 		// TODO Auto-generated method stub
 		this.memberReservations = this.userController.getReservationSummary(member);
+		System.out.println(memberReservations);
 		if (this.memberReservations.isEmpty()) {
 			this.reservationTickets = new ArrayList<TicketInfoResponse>();
 		} else {

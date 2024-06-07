@@ -118,39 +118,50 @@ class ReservationTableCellRenderer extends DefaultTableCellRenderer {
 }
 
 class TicketTable extends JTable {
-	private MovieSearchViewModel viewModel;
-	
-	TicketTable(MovieSearchViewModel viewModel) {
-		this.viewModel = viewModel;
-		this.setModel(this.viewModel.ticketsToTableModel());
-		this.setRowHeight(40);
-		this.setDefaultRenderer(Object.class, new ReservationTableCellRenderer());
-		
-		JTableHeader header = this.getTableHeader();
-		header.setDefaultRenderer(new ReservationTableHeaderRenderer());
-		TableColumn durationHeader = header.getColumnModel().getColumn(1);
-		durationHeader.setWidth(100);
-	}
+    private MovieSearchViewModel viewModel;
+    
+    TicketTable(MovieSearchViewModel viewModel) {
+        this.viewModel = viewModel;
+        updateTableModel();
+        this.setRowHeight(40);
+        this.setDefaultRenderer(Object.class, new ReservationTableCellRenderer());
+        
+        JTableHeader header = this.getTableHeader();
+        header.setDefaultRenderer(new ReservationTableHeaderRenderer());
+        TableColumn durationHeader = header.getColumnModel().getColumn(1);
+        durationHeader.setWidth(100);
+    }
+
+    public void updateTableModel() {
+        DefaultTableModel model = this.viewModel.ticketsToTableModel();
+        this.setModel(model);
+    }
 }
 
 class ReservationTable extends JTable {
-	private MovieSearchViewModel viewModel;
-	
-	ReservationTable(MovieSearchViewModel viewModel) {
-		this.viewModel = viewModel;
-		this.setModel(this.viewModel.reservationsToTableModel());
-		this.setRowHeight(40);
-		this.setDefaultRenderer(Object.class, new ReservationTableCellRenderer());
-		
-		JTableHeader header = this.getTableHeader();
-		header.setDefaultRenderer(new ReservationTableHeaderRenderer());
-	}
+    private MovieSearchViewModel viewModel;
+    
+    ReservationTable(MovieSearchViewModel viewModel) {
+        this.viewModel = viewModel;
+        updateTableModel();
+        this.setRowHeight(40);
+        this.setDefaultRenderer(Object.class, new ReservationTableCellRenderer());
+        
+        JTableHeader header = this.getTableHeader();
+        header.setDefaultRenderer(new ReservationTableHeaderRenderer());
+    }
+
+    public void updateTableModel() {
+        DefaultTableModel model = this.viewModel.reservationsToTableModel();
+        this.setModel(model);
+    }
 }
+
 
 class ReservationListPanel extends JPanel implements ListSelectionListener {
     private MovieSearchViewModel viewModel;
     private ReservationTable reservationTable;
-    private TicketTable ticketTable; // 변수명을 수정
+    private TicketTable ticketTable;
 
     ReservationListPanel(MovieSearchViewModel viewModel) {
         this.viewModel = viewModel;
@@ -184,7 +195,7 @@ class ReservationListPanel extends JPanel implements ListSelectionListener {
         ticketLabel.setFont(new Font(null, Font.PLAIN, 16));
         ticketPanel.add(ticketLabel, BorderLayout.NORTH);
 
-        this.ticketTable = new TicketTable(this.viewModel); // 올바르게 초기화
+        this.ticketTable = new TicketTable(this.viewModel);
 
         JScrollPane ticketTableScrollPane = new JScrollPane();
 		ticketTableScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -204,9 +215,9 @@ class ReservationListPanel extends JPanel implements ListSelectionListener {
                     JOptionPane.showMessageDialog(deleteButton, "예약정보를 선택해 주세요!", "Information", JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     viewModel.deleteButtonClicked();
-                    reservationTable.setModel(viewModel.reservationsToTableModel());
+                    reservationTable.updateTableModel();
                     reservationTable.getSelectionModel().setSelectionMode(0);
-                    ticketTable.setModel(viewModel.ticketsToTableModel());
+                    ticketTable.updateTableModel();
                 }
             }
         });
@@ -219,15 +230,16 @@ class ReservationListPanel extends JPanel implements ListSelectionListener {
         // TODO Auto-generated method stub
 		if(!e.getValueIsAdjusting()) {
 			this.viewModel.reservationCellSelected(this.reservationTable.getSelectedRow());
-			this.ticketTable.setModel(this.viewModel.ticketsToTableModel()); // 변수명을 수정
+			this.ticketTable.updateTableModel();
 		}
     }
 
     public void updateTable() {
-        this.reservationTable.setModel(this.viewModel.reservationsToTableModel());
-        this.ticketTable.setModel(this.viewModel.ticketsToTableModel()); // 변수명을 수정
+        this.reservationTable.updateTableModel();
+        this.ticketTable.updateTableModel();
     }
 }
+
 
 class MovieTableHeaderRenderer extends DefaultTableCellRenderer {
 	@Override
