@@ -199,6 +199,10 @@ public class MovieSearchViewModel {
 					})
 			);
 			
+			if(tableModel == null) {
+				return new DefaultTableModel();
+			}
+			
 			return tableModel;
 	}
 	

@@ -50,9 +50,6 @@ class DIContainer {
 	AdminViewModel adimViewDependencies;
 	
 	DIContainer() {
-		DatabaseInitializer databaseInitializer = new DatabaseInitializer();
-        databaseInitializer.initializeDatabase();
-        
         MovieRepository movieRepository = new MovieRepository();
         MovieService movieService = new MovieService(movieRepository);
 

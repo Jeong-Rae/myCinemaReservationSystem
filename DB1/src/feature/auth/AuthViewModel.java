@@ -11,7 +11,7 @@ public class AuthViewModel {
 	}
 	
 	public boolean managerLoginButtonClicked() {
-		if (id == "user1") {
+		if (id.equals("user1")) {
 			return false;
 		}
 		
@@ -29,7 +29,7 @@ public class AuthViewModel {
 	}
 	
 	public boolean userLoginButtonClicked() {
-		if (id == "root") {
+		if (id.equals("root")) {
 			return false;
 		}
 		

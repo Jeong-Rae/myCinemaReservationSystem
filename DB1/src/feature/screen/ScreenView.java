@@ -340,7 +340,7 @@ public class ScreenView extends JFrame implements ListSelectionListener {
 	private ScreenPanel screen;
 	private SelectedSeatListPanel selectedSeatList;
 	
-	public ScreenView(ScreenViewModel viewModel, Long reservationId) {
+	public ScreenView(ScreenViewModel viewModel) {
 		this.viewModel = viewModel;
 		this.setTitle("좌석 선택");
 		this.setSize(1920, 1080);

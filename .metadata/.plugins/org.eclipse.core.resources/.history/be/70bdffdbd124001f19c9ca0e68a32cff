@@ -146,79 +146,75 @@ class ReservationTable extends JTable {
 }
 
 class ReservationListPanel extends JPanel implements ListSelectionListener {
-    private MovieSearchViewModel viewModel;
-    private ReservationTable reservationTable;
-    private TicketTable ticketTable; // 변수명을 수정
+	private MovieSearchViewModel viewModel;
+	private ReservationTable reservationTable;
+	private TicketTable tickeTable;
+	
+	ReservationListPanel(MovieSearchViewModel viewModel) {
+		this.viewModel = viewModel;
+		this.setLayout(new BorderLayout(20, 20));
+		
+		JPanel reservationPanel = new JPanel();
+		reservationPanel.setLayout(new BorderLayout());
+		JLabel reservationLabel = new JLabel("예약정보");
+		reservationLabel.setFont(new Font(null, Font.PLAIN, 16));
+		reservationPanel.add(reservationLabel, BorderLayout.NORTH);
+		
+		this.reservationTable = new ReservationTable(this.viewModel);
+		this.reservationTable.setRowSelectionInterval(0, 0);
+		this.reservationTable.getSelectionModel().addListSelectionListener(this);
+		this.viewModel.reservationCellSelected(0);
+		
+		JScrollPane reservationTableScrollPane = new JScrollPane();
+		reservationTableScrollPane.setViewportView(this.reservationTable);
+		reservationPanel.add(reservationTableScrollPane, BorderLayout.CENTER);
+		this.add(reservationPanel, BorderLayout.NORTH);
+		
+		JPanel ticketPanel = new JPanel();
+		ticketPanel.setLayout(new BorderLayout());
+		JLabel ticketLabel = new JLabel("티켓정보");
+		ticketLabel.setFont(new Font(null, Font.PLAIN, 16));
+		ticketPanel.add(ticketLabel, BorderLayout.NORTH);
+		
+		this.tickeTable = new TicketTable(this.viewModel);
+		
+		JScrollPane tickeTableScrollPane = new JScrollPane();
+		tickeTableScrollPane.setViewportView(this.tickeTable);
+		ticketPanel.add(tickeTableScrollPane, BorderLayout.CENTER);
+		this.add(ticketPanel, BorderLayout.CENTER);
+		
+		TicketButtonsPanel buttonsPanel = new TicketButtonsPanel(this.viewModel, this.tickeTable);
+		JButton deleteButton = new JButton("예약 삭제");
+		deleteButton.addActionListener(new ActionListener() {
 
-    ReservationListPanel(MovieSearchViewModel viewModel) {
-        this.viewModel = viewModel;
-        this.setLayout(new BorderLayout(20, 20));
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if (viewModel.selectedReservation == null) {
+					JOptionPane.showMessageDialog(deleteButton, "예약정보를 선택해 주세요!", "Information", JOptionPane.INFORMATION_MESSAGE);
+				} else {
+					viewModel.deleteButtonClicked();
+					reservationTable.setModel(viewModel.reservationsToTableModel());
+					reservationTable.getSelectionModel().setSelectionMode(0);
+					tickeTable.setModel(viewModel.ticketsToTableModel());
+				}
+			}
+		});
+		buttonsPanel.add(deleteButton);
+		this.add(buttonsPanel, BorderLayout.SOUTH);
+	}
 
-        JPanel reservationPanel = new JPanel();
-        reservationPanel.setLayout(new BorderLayout());
-        JLabel reservationLabel = new JLabel("예약정보");
-        reservationLabel.setFont(new Font(null, Font.PLAIN, 16));
-        reservationPanel.add(reservationLabel, BorderLayout.NORTH);
-
-        this.reservationTable = new ReservationTable(this.viewModel);
-
-        if (!viewModel.memberReservations.isEmpty()) {
-            this.reservationTable.setRowSelectionInterval(0, 0);
-            this.viewModel.reservationCellSelected(0);
-        }
-        
-        this.reservationTable.getSelectionModel().addListSelectionListener(this);
-
-        JScrollPane reservationTableScrollPane = new JScrollPane();
-        reservationTableScrollPane.setViewportView(this.reservationTable);
-        reservationPanel.add(reservationTableScrollPane, BorderLayout.CENTER);
-        this.add(reservationPanel, BorderLayout.NORTH);
-
-        JPanel ticketPanel = new JPanel();
-        ticketPanel.setLayout(new BorderLayout());
-        JLabel ticketLabel = new JLabel("티켓정보");
-        ticketLabel.setFont(new Font(null, Font.PLAIN, 16));
-        ticketPanel.add(ticketLabel, BorderLayout.NORTH);
-
-        this.ticketTable = new TicketTable(this.viewModel); // 올바르게 초기화
-
-        JScrollPane ticketTableScrollPane = new JScrollPane();
-        ticketTableScrollPane.setViewportView(this.ticketTable);
-        ticketPanel.add(ticketTableScrollPane, BorderLayout.CENTER);
-        this.add(ticketPanel, BorderLayout.CENTER);
-
-        TicketButtonsPanel buttonsPanel = new TicketButtonsPanel(this.viewModel, this.ticketTable);
-        JButton deleteButton = new JButton("예약 삭제");
-        deleteButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // TODO Auto-generated method stub
-                if (viewModel.selectedReservation == null) {
-                    JOptionPane.showMessageDialog(deleteButton, "예약정보를 선택해 주세요!", "Information", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    viewModel.deleteButtonClicked();
-                    reservationTable.setModel(viewModel.reservationsToTableModel());
-                    reservationTable.getSelectionModel().setSelectionMode(0);
-                    ticketTable.setModel(viewModel.ticketsToTableModel());
-                }
-            }
-        });
-        buttonsPanel.add(deleteButton);
-        this.add(buttonsPanel, BorderLayout.SOUTH);
-    }
-
-    @Override
-    public void valueChanged(ListSelectionEvent e) {
-        // TODO Auto-generated method stub
-        this.viewModel.reservationCellSelected(this.reservationTable.getSelectedRow());
-        this.ticketTable.setModel(this.viewModel.ticketsToTableModel()); // 변수명을 수정
-    }
-
-    public void updateTable() {
-        this.reservationTable.setModel(this.viewModel.reservationsToTableModel());
-        this.ticketTable.setModel(this.viewModel.ticketsToTableModel()); // 변수명을 수정
-    }
+	@Override
+	public void valueChanged(ListSelectionEvent e) {
+		// TODO Auto-generated method stub
+		this.viewModel.reservationCellSelected(this.reservationTable.getSelectedRow());
+		this.tickeTable.setModel(this.viewModel.ticketsToTableModel());
+	}
+	
+	public void updateTable() {
+		this.reservationTable.setModel(this.viewModel.reservationsToTableModel());
+		this.tickeTable.setModel(this.viewModel.ticketsToTableModel());
+	}
 }
 
 class MovieTableHeaderRenderer extends DefaultTableCellRenderer {

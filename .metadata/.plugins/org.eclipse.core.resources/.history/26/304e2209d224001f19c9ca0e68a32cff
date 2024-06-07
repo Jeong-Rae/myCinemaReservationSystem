@@ -80,7 +80,7 @@ public class ScreenViewModel {
 		List<TicketRequest> ticketRequests = this.selectedSeats.stream().map(seat -> new TicketRequest(12000, 12000, seat)).toList();
 		ReservationRequest reservation = new ReservationRequest(ticketRequests, this.paymentMethod, this.userController.getMemberId());
 		
-		if (reservationId == null) {
+		if (reservation == null) {
 			this.userController.createReservation(reservation);
 			this.delegate.reservationButtonReleased();
 		} else {

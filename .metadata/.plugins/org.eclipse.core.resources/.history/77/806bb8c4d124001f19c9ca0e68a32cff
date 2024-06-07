@@ -206,13 +206,8 @@ public class MovieSearchViewModel {
 		if (reservaionRow == -1) {
 			reservaionRow = 0;
 		}
-		if(this.memberReservations.isEmpty()) {
-			this.selectedReservation = null;
-			this.reservationTickets = new ArrayList<TicketInfoResponse>();
-		} else {
-			this.selectedReservation = this.memberReservations.get(reservaionRow);
-			this.reservationTickets = this.userController.getTicketInfoResponses(selectedReservation.revervationId());
-		}
+		this.selectedReservation = this.memberReservations.get(reservaionRow);
+		this.reservationTickets = this.userController.getTicketInfoResponses(selectedReservation.revervationId());
 	}
 	
 	private void updateMoviesByCriteria() {

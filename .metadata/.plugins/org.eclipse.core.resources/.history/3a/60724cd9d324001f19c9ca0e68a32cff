@@ -161,13 +161,12 @@ class ReservationListPanel extends JPanel implements ListSelectionListener {
         reservationPanel.add(reservationLabel, BorderLayout.NORTH);
 
         this.reservationTable = new ReservationTable(this.viewModel);
+        this.reservationTable.getSelectionModel().addListSelectionListener(this);
 
         if (!viewModel.memberReservations.isEmpty()) {
             this.reservationTable.setRowSelectionInterval(0, 0);
             this.viewModel.reservationCellSelected(0);
         }
-        
-        this.reservationTable.getSelectionModel().addListSelectionListener(this);
 
         JScrollPane reservationTableScrollPane = new JScrollPane();
         reservationTableScrollPane.setViewportView(this.reservationTable);

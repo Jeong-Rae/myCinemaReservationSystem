@@ -40,12 +40,7 @@ public class MovieSearchViewModel {
 		);
 		this.member = this.userController.getMember();
 		this.memberReservations = this.userController.getReservationSummary(member);
-		
-		if (this.memberReservations.isEmpty()) {
-			this.reservationTickets = new ArrayList<TicketInfoResponse>();
-		} else {
-			this.reservationTickets = this.userController.getTicketInfoResponses(this.memberReservations.get(0).revervationId());
-		}
+		this.reservationTickets = this.userController.getTicketInfoResponses(this.memberReservations.get(0).revervationId());
 	}
 	
 	public void titleTextFieldKeyReleased(String title) {
@@ -206,13 +201,8 @@ public class MovieSearchViewModel {
 		if (reservaionRow == -1) {
 			reservaionRow = 0;
 		}
-		if(this.memberReservations.isEmpty()) {
-			this.selectedReservation = null;
-			this.reservationTickets = new ArrayList<TicketInfoResponse>();
-		} else {
-			this.selectedReservation = this.memberReservations.get(reservaionRow);
-			this.reservationTickets = this.userController.getTicketInfoResponses(selectedReservation.revervationId());
-		}
+		this.selectedReservation = this.memberReservations.get(reservaionRow);
+		this.reservationTickets = this.userController.getTicketInfoResponses(selectedReservation.revervationId());
 	}
 	
 	private void updateMoviesByCriteria() {
