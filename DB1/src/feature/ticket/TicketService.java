@@ -8,6 +8,7 @@ import java.util.List;
 import core.domain.reservation.Reservation;
 import core.domain.seat.Seat;
 import core.domain.ticket.Ticket;
+import core.domain.ticket.TicketInfoResponse;
 import core.domain.ticket.TicketRequest;
 import infrastructure.config.DatabaseConfig;
 import infrastructure.repository.TicketRepository;
@@ -24,6 +25,17 @@ public class TicketService {
         }
 
         return response;
+    }
+    
+    public List<TicketInfoResponse> findInfoResponses(Long reservationId) {
+    	List<TicketInfoResponse> response = new ArrayList<>();
+    	try (Connection connection = DatabaseConfig.getConnectionUser()) {
+			response = ticketRepository.findTicketInfoResponsesByReservationId(connection, reservationId);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+    	
+    	return response;
     }
     
     //티켓 예약

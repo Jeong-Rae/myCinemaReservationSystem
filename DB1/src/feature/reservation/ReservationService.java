@@ -51,6 +51,21 @@ public class ReservationService {
     	return reservation;
     	
     }
+    
+    //member 에약 조회
+    public List<ReverationSummary> findReverationSummaryesByMemberId(long memberId) {
+    	List<ReverationSummary> response = new ArrayList<ReverationSummary>();
+    	try (Connection connection = DatabaseConfig.getConnectionUser()) {
+    		response = reservationRepository.findReverationsByMemberId(connection, memberId);
+    		
+    		System.out.println("[findReverationSummaryes] memberId: " + memberId);
+    		return response;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    	
+    	return response;
+    }
 
     public int updateReservation(String setClause) {
         try (Connection connection = DatabaseConfig.getConnectionAdmin()) {
@@ -71,6 +86,9 @@ public class ReservationService {
             return 0;
         }
     }
+    
+    // member의 예약정보 조회
+    
 
     public ReservationService(ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;

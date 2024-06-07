@@ -1,12 +1,10 @@
-import java.awt.Container;
 import java.util.List;
-
-import javax.swing.JFrame;
 
 import core.domain.movie.Movie;
 import core.domain.reservation.PaymentMethodType;
 import core.domain.screeningschedule.ScreeningSchedule;
 import core.domain.seat.Seat;
+import core.domain.ticket.TicketInfoResponse;
 import core.domain.ticket.TicketRequest;
 import feature.admin.AdminController;
 import feature.admin.AdminView;
@@ -25,6 +23,7 @@ import feature.movie.SearchCriteria;
 import feature.reservation.ReservationRequest;
 import feature.reservation.ReservationResponse;
 import feature.reservation.ReservationService;
+import feature.reservation.ReverationSummary;
 import feature.screen.ScreenService;
 import feature.screen.ScreenView;
 import feature.screen.ScreenViewModel;
@@ -41,7 +40,6 @@ import infrastructure.repository.ScreenRepository;
 import infrastructure.repository.ScreeningScheduleRepository;
 import infrastructure.repository.SeatRepository;
 import infrastructure.repository.TicketRepository;
-import infrastructure.repository.db2.*;
 
 class DIContainer {
 	UserController userController;
@@ -139,6 +137,14 @@ class DIContainer {
         this.authViewDependencies = new AuthViewModel(authController);
         this.movieSearchViewDependcies = new MovieSearchViewModel(userController);
         this.adimViewDependencies = new AdminViewModel(adminController);
+        
+        // 예약목록 조회 샘플 코드
+        List<ReverationSummary> reverationSummaries = userController.getReservationSummary(userController.getMember());
+        System.out.println(reverationSummaries);
+        
+        List<TicketInfoResponse> ticketInfoResponses = userController.getTicketInfoResponses(1L);
+        System.out.println(ticketInfoResponses);
+        
 	}
 	
 	public ScreenViewModel screenViewDependencies(Movie movie) {

@@ -10,6 +10,7 @@ import core.domain.screen.Screen;
 import core.domain.screeningschedule.ScreeningSchedule;
 import core.domain.seat.Seat;
 import core.domain.ticket.Ticket;
+import core.domain.ticket.TicketInfoResponse;
 import core.domain.ticket.TicketRequest;
 import feature.member.MemberService;
 import feature.movie.MovieService;
@@ -17,6 +18,7 @@ import feature.movie.SearchCriteria;
 import feature.reservation.ReservationRequest;
 import feature.reservation.ReservationResponse;
 import feature.reservation.ReservationService;
+import feature.reservation.ReverationSummary;
 import feature.screen.ScreenService;
 import feature.screeningschedule.ScreeningScheduleService;
 import feature.seat.SeatRequest;
@@ -97,6 +99,16 @@ public class UserController {
     	return response;
     }
     
+    // 예약정보 기반 티켓정보
+    public List<TicketInfoResponse> getTicketInfoResponses(Long reservationId) {
+		List<TicketInfoResponse> response = new ArrayList<TicketInfoResponse>();
+		
+		response = ticketService.findInfoResponses(reservationId);
+		System.out.println("getTicketInfoResponses] ticket 정보 조회 reservationId: "+reservationId);
+		
+		return response;
+	}
+    
     public List<Reservation> getReservationsByMemberId(long memberId) {
     	return this.reservationService
     			.findAllReservations()
@@ -142,7 +154,10 @@ public class UserController {
 	WHERE 
 	    1=1 OR R.reservation_id = 1
      */
-    
+    public List<ReverationSummary> getReservationSummary(Member member) {
+    	System.out.println("[getReservationSummary] 예약정보 조회 memberId: "+member.getMemberId());
+    	return reservationService.findReverationSummaryesByMemberId(member.getMemberId());
+    }
 
     // DELETE
 
